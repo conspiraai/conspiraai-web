@@ -1,18 +1,16 @@
-// Simple mock to animate the AII bar a bit on load.
-// Later this file can fetch real AII + lunar/market data from your backend.
+// Conspira AI - small UI helpers
 
-(function () {
-  const valueEl = document.getElementById("aii-value");
-  const barEl = document.getElementById("aii-bar-inner");
-  if (!valueEl || !barEl) return;
-
-  const target = parseInt(valueEl.textContent, 10) || 76;
-  const targetWidth = Math.max(5, Math.min(100, target));
-
-  barEl.style.width = "0%";
-
-  setTimeout(() => {
-    barEl.style.transition = "width 1.6s cubic-bezier(0.16, 1, 0.3, 1)";
-    barEl.style.width = targetWidth + "%";
-  }, 200);
-})();
+// Simple scroll-to-section for nav labels (where it makes sense)
+document.addEventListener("DOMContentLoaded", () => {
+  const links = document.querySelectorAll(".nav__link");
+  links.forEach((link) => {
+    link.addEventListener("click", () => {
+      const text = link.textContent?.trim().toLowerCase();
+      if (text === "network") {
+        document.getElementById("network")?.scrollIntoView({ behavior: "smooth" });
+      } else if (text === "signals") {
+        document.getElementById("how-it-works")?.scrollIntoView({ behavior: "smooth" });
+      }
+    });
+  });
+});
