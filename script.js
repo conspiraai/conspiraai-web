@@ -1,16 +1,33 @@
-// Conspira AI - small UI helpers
+// Conspira AI - Small UI helpers
 
-// Simple scroll-to-section for nav labels (where it makes sense)
+function smoothScrollToSection(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
 document.addEventListener("DOMContentLoaded", () => {
-  const links = document.querySelectorAll(".nav__link");
-  links.forEach((link) => {
+  // Nav clicks
+  const navLinks = document.querySelectorAll(".nav__link[data-target]");
+  navLinks.forEach((link) => {
     link.addEventListener("click", () => {
-      const text = link.textContent?.trim().toLowerCase();
-      if (text === "network") {
-        document.getElementById("network")?.scrollIntoView({ behavior: "smooth" });
-      } else if (text === "signals") {
-        document.getElementById("how-it-works")?.scrollIntoView({ behavior: "smooth" });
+      const target = link.getAttribute("data-target");
+      if (target) {
+        smoothScrollToSection(target);
       }
+      navLinks.forEach((l) => l.classList.remove("nav__link--active"));
+      link.classList.add("nav__link--active");
     });
   });
+
+  // Hero buttons
+  const indexBtn = document.getElementById("scroll-to-index");
+  if (indexBtn) {
+    indexBtn.addEventListener("click", () => smoothScrollToSection("top"));
+  }
+
+  const networkBtn = document.getElementById("scroll-to-network");
+  if (networkBtn) {
+    networkBtn.addEventListener("click", () => smoothScrollToSection("network"));
+  }
 });
