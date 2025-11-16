@@ -1,47 +1,19 @@
 :root {
-  /* Base */
-  --black: #050509;
-  --black-soft: #0A0A0F;
-  --white: #F6F8FA;
+    /* Backgrounds */
+    --bg: #0a0b0f;
+    --bg-light: #12141a;
 
-  /* Primary accents */
-  --icePink: #FF84C8;
-  --cottonBlue: #7BCBFF;
+    /* Text */
+    --text-main: #ffffff;
+    --text-sub: #b6b6c8;
 
-  /* Secondary accents */
-  --mint: #88FFD2;
-  --lemon: #FFF59D;
+    /* Pastel Accents */
+    --pink: #ffb4e6;
+    --blue: #a5d8ff;
+    --mint: #b9f6d1;
+    --lemon: #ffeaa7;
 
-  /* Neutrals */
-  --gray-100: #F1F3F5;
-  --gray-300: #C4C7CC;
-  --gray-500: #9CA1AE;
-  --gray-600: #757B87;
-  --gray-800: #22252C;
-
-  /* Shadows */
-  --shadow-soft: 0 18px 45px rgba(0, 0, 0, 0.55);
-}
-
-/* Global base */
-
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
-
-html,
-body {
-  margin: 0;
-  padding: 0;
-}
-
-body {
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
-    "Inter", "Segoe UI", sans-serif;
-  background:
-    radial-gradient(circle at top left, #191a26 0%, #050509 45%, #000 100%);
-  color: var(--white);
-  -webkit-font-smoothing: antialiased;
+    /* Component Extras */
+    --card-border: rgba(255,255,255,0.07);
+    --panel-glow: 0 0 20px rgba(255,180,230,0.25);
 }
