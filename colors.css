@@ -1,19 +1,21 @@
 :root {
   /* Base */
-  --black: #0A0A0C;
+  --black: #050509;
+  --black-soft: #0A0A0F;
   --white: #F6F8FA;
 
   /* Primary accents */
   --icePink: #FF84C8;
   --cottonBlue: #7BCBFF;
 
-  /* Secondary accents (small touches only) */
+  /* Secondary accents */
   --mint: #88FFD2;
   --lemon: #FFF59D;
 
   /* Neutrals */
   --gray-100: #F1F3F5;
   --gray-300: #C4C7CC;
+  --gray-500: #9CA1AE;
   --gray-600: #757B87;
   --gray-800: #22252C;
 
@@ -21,7 +23,8 @@
   --shadow-soft: 0 18px 45px rgba(0, 0, 0, 0.55);
 }
 
-/* Global typography + base reset */
+/* Global base */
+
 *,
 *::before,
 *::after {
@@ -37,7 +40,8 @@ body {
 body {
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
     "Inter", "Segoe UI", sans-serif;
-  background: radial-gradient(circle at top, #13141a 0%, #050507 55%, #000 100%);
+  background:
+    radial-gradient(circle at top left, #191a26 0%, #050509 45%, #000 100%);
   color: var(--white);
   -webkit-font-smoothing: antialiased;
 }
