@@ -5,7 +5,7 @@
     <title>Conspira AI — Astral Intelligence for Markets</title>
     <meta
       name="description"
-      content="Conspira AI overlays lunar cycles and astral events on top of crypto and market data to surface high-probability volatility windows."
+      content="Conspira AI overlays lunar cycles and astral events on crypto and markets to surface high-probability volatility windows."
     />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" href="colors.css" />
@@ -14,7 +14,7 @@
   <body>
     <div class="page">
       <main class="page__inner">
-        <!-- Top nav -->
+        <!-- NAV -->
         <header class="nav">
           <div class="nav__brand">
             <div class="nav__logo-dot"></div>
@@ -24,47 +24,57 @@
             </div>
           </div>
           <nav class="nav__links">
-            <span class="nav__link nav__link--active">All Today</span>
-            <span class="nav__link">Lunar Cycle</span>
-            <span class="nav__link">Signals</span>
-            <span class="nav__link">Network</span>
+            <span class="nav__link nav__link--active" data-target="top">
+              All Today
+            </span>
+            <span class="nav__link" data-target="how-it-works">
+              Lunar Cycle
+            </span>
+            <span class="nav__link" data-target="how-it-works">
+              Signals
+            </span>
+            <span class="nav__link" data-target="network">
+              Network
+            </span>
           </nav>
         </header>
 
-        <!-- Hero -->
-        <section class="hero" aria-label="Astral Intelligence overview">
+        <!-- HERO -->
+        <section class="hero" id="top" aria-label="Astral Intelligence overview">
           <div>
-            <div class="hero__eyebrow">Astral Intelligence for Markets</div>
+            <div class="hero__eyebrow">Signals from the sky, data from markets</div>
             <h1 class="hero__title">
               Markets move <span>with the Moon.</span>
             </h1>
             <p class="hero__tagline">
-              Conspira AI tracks lunar cycles, eclipses, retrogrades, and solar
+              Conspira AI tracks lunar cycles, eclipses, retrogrades and solar
               storms to map <span>cosmic tension</span> onto crypto and market
               volatility.
             </p>
 
             <div class="hero__buttons">
-              <button class="btn btn--primary">
+              <button class="btn btn--primary" id="scroll-to-index">
                 View Today's Astral Charge
               </button>
-              <button class="btn btn--secondary">Join the Signal Network</button>
+              <button class="btn btn--secondary" id="scroll-to-network">
+                Join the Signal Network
+              </button>
             </div>
 
             <div class="hero__meta">
               <div>
-                <div class="hero__meta-label">Primary Focus</div>
+                <div class="hero__meta-label">Primary focus</div>
                 <div>Solana &amp; Crypto</div>
               </div>
               <div>
-                <div class="hero__meta-label">Signal Engine</div>
+                <div class="hero__meta-label">Signal engine</div>
                 <div>Astral Intelligence Index (All)</div>
               </div>
             </div>
           </div>
 
-          <!-- Astral card -->
-          <aside class="hero__card">
+          <!-- ASTRAL CARD -->
+          <aside class="hero__card" aria-label="Today's Astral Intelligence Index">
             <div class="card-label">Today's Astral Intelligence Index</div>
             <div class="card-title-row">
               <div class="card-title">AII Score</div>
@@ -73,7 +83,7 @@
               </div>
             </div>
             <p class="card-note" id="astral-note">
-              Loading live lunar data&hellip;
+              Loading live lunar data…
             </p>
 
             <div class="card-tags">
@@ -97,21 +107,33 @@
               <div>
                 <div class="card-stat-label">Location</div>
                 <div class="card-stat-value" id="observer-location">
-                  Planet Earth
+                  Earth
                 </div>
               </div>
             </div>
 
             <div class="card-bands">
-              <strong>Reading the index:</strong> 0–20 reset &amp;
-              accumulation · 20–40 neutral flows · 40–70 charged volatility
-              window · 70–100 high alert &ndash; strong probability of outsized
-              moves.
+              <strong>Reading the index:</strong> 0–20 reset &amp; accumulation ·
+              20–40 neutral flows · 40–70 charged volatility window · 70–100 high
+              alert for outsized moves.
+            </div>
+
+            <!-- DAILY HOROSCOPE / ASTRAL ENERGY -->
+            <div class="horoscope">
+              <div class="horoscope__header">
+                <div class="horoscope__title">Daily astral energy</div>
+                <div class="horoscope__sign" id="horoscope-sign-label">
+                  Loading sign…
+                </div>
+              </div>
+              <div id="horoscope-text">
+                Fetching today’s message…
+              </div>
             </div>
           </aside>
         </section>
 
-        <!-- How it works -->
+        <!-- HOW IT WORKS -->
         <section class="section" id="how-it-works">
           <h2 class="section__title">Astral Intelligence Index</h2>
           <p class="section__body">
@@ -125,24 +147,23 @@
               <h3>How it works</h3>
               <ul>
                 <li>
-                  <strong>Lunar intensity</strong> &mdash; full &amp; new
-                  moons, perigee / apogee windows.
+                  <strong>Lunar intensity</strong> — full &amp; new moons,
+                  perigee / apogee windows.
                 </li>
                 <li>
-                  <strong>Eclipse shock</strong> &mdash; chaos windows around
-                  solar &amp; lunar eclipses.
+                  <strong>Eclipse shock</strong> — chaos windows around solar &amp;
+                  lunar eclipses.
                 </li>
                 <li>
-                  <strong>Retrograde chaos</strong> &mdash; misfires &amp;
-                  fakeouts during Mercury retrograde.
+                  <strong>Retrograde chaos</strong> — misfires &amp; fakeouts
+                  during Mercury retrograde.
                 </li>
                 <li>
-                  <strong>Solar aggro</strong> &mdash; geomagnetic storms &amp;
-                  solar flares.
+                  <strong>Solar aggro</strong> — geomagnetic storms &amp; flares.
                 </li>
                 <li>
-                  <strong>Portal days</strong> &mdash; numerology-aligned dates
-                  &amp; attention spikes.
+                  <strong>Portal days</strong> — numerology-aligned dates &amp;
+                  attention spikes.
                 </li>
               </ul>
             </article>
@@ -150,25 +171,25 @@
             <article class="info-card">
               <h3>Reading the index</h3>
               <ul>
-                <li><strong>0–20</strong> &mdash; low charge: chop / reset.</li>
+                <li><strong>0–20</strong> — low charge: chop / reset.</li>
                 <li>
-                  <strong>20–40</strong> &mdash; neutral: flows &amp; news
-                  drive price more than stars.
+                  <strong>20–40</strong> — neutral: flows &amp; news drive more
+                  than stars.
                 </li>
                 <li>
-                  <strong>40–70</strong> &mdash; charged: volatility window
-                  statistically elevated.
+                  <strong>40–70</strong> — charged: volatility window statistically
+                  elevated.
                 </li>
                 <li>
-                  <strong>70–100</strong> &mdash; high alert: strong
-                  probability of outsized moves.
+                  <strong>70–100</strong> — high alert: strong probability of
+                  outsized moves.
                 </li>
               </ul>
             </article>
           </div>
         </section>
 
-        <!-- Network (keep core channels how you like them) -->
+        <!-- NETWORK -->
         <section class="network" id="network">
           <div class="network__header">
             <div class="network__title">Join the Conspira Network</div>
