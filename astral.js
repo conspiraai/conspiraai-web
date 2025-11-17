@@ -1,157 +1,142 @@
 /*
- * Conspira AI – Astral data + logic
- * Uses ipgeolocation.io Astronomy API to pull live moon data and compute AII.
+ * Conspira AI – Astral data + index logic
+ * Uses ipgeolocation.io Astronomy API with your API key.
  */
 
-const IPGEO_API_KEY = "82fd924c51bf4ac48bd9c64119b1d606";
-// You can change this to any city string ipgeolocation understands.
-const OBSERVER_LOCATION = "New York,US";
+const CONSPIRA_API_KEY = "82fd924c51bf4ac48bd9c64119b1d606"; // your key
+const CONSPIRA_LOCATION = "New York,US"; // change if you want
 
 async function fetchLunarData() {
-  const url = `https://api.ipgeolocation.io/astronomy?apiKey=${IPGEO_API_KEY}&location=${encodeURIComponent(
-    OBSERVER_LOCATION
+  if (!CONSPIRA_API_KEY) {
+    throw new Error("Missing API key");
+  }
+
+  const url = `https://api.ipgeolocation.io/astronomy?apiKey=${CONSPIRA_API_KEY}&location=${encodeURIComponent(
+    CONSPIRA_LOCATION
   )}`;
 
-  try {
-    const res = await fetch(url);
-    if (!res.ok) {
-      throw new Error(`Astronomy API error ${res.status}`);
-    }
-    const data = await res.json();
-
-    return {
-      phase: data.moon_phase || "Unknown",
-      illumination: Number(data.moon_illumination) || null,
-      distanceKm: Number(data.moon_distance) || null,
-      location: OBSERVER_LOCATION,
-    };
-  } catch (err) {
-    console.error("Conspira AI – error fetching lunar data:", err);
-    return null;
+  const res = await fetch(url);
+  if (!res.ok) {
+    throw new Error(`Astronomy API error ${res.status}`);
   }
+  const data = await res.json();
+
+  return {
+    phase: data.moon_phase,
+    illumination: Number(data.moon_illumination),
+    distanceKm: Number(data.moon_distance),
+    sunDistanceKm: Number(data.sun_distance),
+    location: CONSPIRA_LOCATION,
+  };
 }
 
-/**
- * Compute Astral Intelligence Index (0–100)
- * Basic formula using illumination + phase + distance
- */
 function computeAstralIndex(lunar) {
-  if (!lunar) return null;
-
   let score = 0;
 
-  // base from illumination (0–100)
-  if (typeof lunar.illumination === "number") {
-    score += lunar.illumination * 0.7;
+  // Base from illumination
+  if (!Number.isNaN(lunar.illumination)) {
+    score += lunar.illumination * 0.6; // 0–60
   }
 
+  // Phase weighting
   const phase = (lunar.phase || "").toLowerCase();
-
-  // phase bonuses
   if (phase.includes("full")) {
-    score += 20;
+    score += 25;
   } else if (phase.includes("new")) {
-    score += 12;
+    score += 18;
   } else if (phase.includes("gibbous") || phase.includes("quarter")) {
-    score += 6;
+    score += 10;
   } else if (phase.includes("crescent")) {
-    score += 3;
+    score += 6;
   }
 
-  // distance bonus: closer than ~365k km
-  if (typeof lunar.distanceKm === "number" && lunar.distanceKm < 365000) {
-    score += 5;
+  // Distance tweak – closer moon slightly higher
+  if (!Number.isNaN(lunar.distanceKm) && lunar.distanceKm > 0) {
+    const closeness = Math.max(
+      0,
+      Math.min(1, (405000 - lunar.distanceKm) / (405000 - 356000))
+    ); // 0 at far, 1 at close
+    score += closeness * 10;
   }
 
-  score = Math.round(score);
-  if (score < 0) score = 0;
-  if (score > 100) score = 100;
-
+  // Clamp
+  score = Math.round(Math.max(0, Math.min(100, score)));
   return score;
 }
 
-function bandForIndex(index) {
-  if (index == null) return { label: "Unknown", color: "neutral" };
-  if (index < 25) return { label: "Reset zone", color: "low" };
-  if (index < 50) return { label: "Neutral flow", color: "neutral" };
-  if (index < 75) return { label: "Charged window", color: "charged" };
-  return { label: "High-alert volatility", color: "high" };
+function interpretIndex(score, phase) {
+  let band = "";
+  let note = "";
+
+  if (score >= 75) {
+    band = "High-charge window";
+    note = `Strongly charged ${phase || "window"} – historically associated with elevated volatility within 24–48h.`;
+  } else if (score >= 55) {
+    band = "Charged volatility window";
+    note = `Above-baseline tension – conditions favour outsized moves and faster trend shifts.`;
+  } else if (score >= 35) {
+    band = "Neutral-to-charged";
+    note =
+      "Tradable but not extreme. News and flows matter more than the sky; good for following trend, not forcing risk.";
+  } else {
+    band = "Low-charge reset";
+    note =
+      "Better for accumulation, journaling and planning than aggressive risk. Watch positioning rather than chasing.";
+  }
+
+  return { band, note };
 }
 
-function describeIndex(index, phase) {
-  if (index == null) {
-    return "Unable to load live lunar data right now.";
-  }
-
-  const p = phase || "the current moon";
-  if (index >= 75) {
-    return `High-charge window around ${p}. Historically associated with sharp, outsized moves within 24–48h.`;
-  }
-  if (index >= 55) {
-    return `Charged window. ${p} tends to correlate with elevated volatility versus baseline.`;
-  }
-  if (index >= 35) {
-    return `Neutral-to-charged window. Conditions are tradable but not extreme; flows and narrative still matter more than sky.`;
-  }
-  return `Low-charge window. Better for accumulation, journaling, and reset than aggressive risk.`;
+function formatKm(km) {
+  if (!km || Number.isNaN(km)) return "–";
+  return `${Math.round(km).toLocaleString("en-US")} km`;
 }
 
-/**
- * Generate a simple 7-day forward "timeline" from today's index.
- * Not real future API data yet – just a shaped curve based on today's reading.
- */
-function generateTimeline(index) {
-  const today = new Date();
-  const base = index == null ? 40 : index;
-  const items = [];
+async function loadAstralCard() {
+  const scoreEl = document.getElementById("ai-score");
+  const bandEl = document.getElementById("ai-band");
+  const noteEl = document.getElementById("ai-note");
+  const phaseEl = document.getElementById("moon-phase");
+  const illumEl = document.getElementById("moon-illumination");
+  const distEl = document.getElementById("moon-distance");
+  const locEl = document.getElementById("location-label");
+  const timelineSummaryEl = document.getElementById("timeline-summary");
 
-  for (let i = 0; i < 7; i++) {
-    const d = new Date(today);
-    d.setDate(today.getDate() + i);
+  try {
+    if (bandEl) bandEl.textContent = "Loading live lunar data…";
 
-    // simple shaping curve
-    const offset = (i - 3) * 4;
-    const dayScore = Math.max(0, Math.min(100, Math.round(base - offset)));
+    const lunar = await fetchLunarData();
+    const score = computeAstralIndex(lunar);
+    const { band, note } = interpretIndex(score, lunar.phase);
 
-    const band = bandForIndex(dayScore);
-    items.push({
-      date: d,
-      score: dayScore,
-      band: band.label,
-    });
+    if (scoreEl) scoreEl.textContent = score;
+    if (bandEl) bandEl.textContent = band;
+    if (noteEl) noteEl.textContent = note;
+    if (phaseEl) phaseEl.textContent = lunar.phase || "–";
+    if (illumEl)
+      illumEl.textContent =
+        Number.isNaN(lunar.illumination) || lunar.illumination == null
+          ? "–"
+          : `${lunar.illumination.toFixed(1)}%`;
+    if (distEl) distEl.textContent = formatKm(lunar.distanceKm);
+    if (locEl) locEl.textContent = lunar.location;
+
+    if (timelineSummaryEl)
+      timelineSummaryEl.textContent = `Based on today’s AII score of ${score}, the next week is projected as ${
+        score >= 70 ? "highly charged" : score >= 50 ? "moderately charged" : "muted"
+      }.`;
+
+    // Hand off to script.js to build the 7-day timeline if available
+    if (typeof window.buildTimeline === "function") {
+      window.buildTimeline(score, lunar.phase);
+    }
+  } catch (err) {
+    console.error("Conspira AI astral load error:", err);
+    if (bandEl) bandEl.textContent = "Error loading data";
+    if (noteEl)
+      noteEl.textContent =
+        "We couldn’t reach the astral API right now. Refresh in a minute or check your API key.";
   }
-
-  return items;
 }
 
-/**
- * Generate a human-readable daily forecast text
- * based on today's index + band.
- */
-function generateForecast(index, phase) {
-  const band = bandForIndex(index);
-
-  if (band.color === "high") {
-    return `The field is highly charged. ${phase} plus crowd positioning often pull forward big moves here. Expect sharp swings and traps on both sides.`;
-  }
-  if (band.color === "charged") {
-    return `Charged but not maxed. Expect more range, fake-outs, and narrative over-reactions as traders project onto the tape.`;
-  }
-  if (band.color === "neutral") {
-    return `Neutral-leaning flow. ${phase} tends to express as rotation and digestion rather than wild expansion. Good for planning the next strike.`;
-  }
-  if (band.color === "low") {
-    return `Low-charge space. Think reset, accumulation, and zoom-out. Great window to clean up bags, journal, and prep for the next high-charge band.`;
-  }
-  return `Reading the field is tricky today. Use risk lightly and let levels prove themselves.`;
-}
-
-// Expose globals for script.js
-window.ConspiraAstral = {
-  fetchLunarData,
-  computeAstralIndex,
-  bandForIndex,
-  describeIndex,
-  generateTimeline,
-  generateForecast,
-};
+document.addEventListener("DOMContentLoaded", loadAstralCard);
