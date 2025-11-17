@@ -1,92 +1,144 @@
-/*
- * Conspira AI – UI wiring (nav + timeline)
- */
+// UI wiring for Conspira AI pages
 
-// Smooth scroll + active nav highlight
-document.addEventListener("DOMContentLoaded", () => {
-  const navLinks = Array.from(document.querySelectorAll(".nav-links a"));
-
-  function setActive(hash) {
-    navLinks.forEach((link) => {
-      if (link.getAttribute("href") === hash) {
-        link.classList.add("active");
-      } else {
-        link.classList.remove("active");
-      }
-    });
-  }
-
-  navLinks.forEach((link) => {
-    link.addEventListener("click", (e) => {
-      const href = link.getAttribute("href");
-      if (href && href.startsWith("#")) {
-        e.preventDefault();
-        const target = document.querySelector(href);
-        if (target) {
-          target.scrollIntoView({ behavior: "smooth", block: "start" });
-          setActive(href);
-        }
-      }
-    });
-  });
-
-  // If loaded with a hash
-  if (window.location.hash) {
-    setActive(window.location.hash);
-  }
+document.addEventListener('DOMContentLoaded', () => {
+  initNavActiveState();
+  initTodayPage();
+  initLunarPage();
+  initSignalsPage();
 });
 
-// Build a simple 7-day trend row based on today’s AII score.
-window.buildTimeline = function (todayScore, phase) {
-  const container = document.getElementById("timeline-rows");
-  if (!container) return;
+/* Highlight current nav tab based on filename */
+function initNavActiveState() {
+  const path = window.location.pathname;
+  const page = path.split('/').pop() || 'index.html';
 
-  container.innerHTML = "";
+  const map = {
+    'index.html': 'nav-today',
+    '': 'nav-today',
+    'lunar-cycle.html': 'nav-lunar',
+    'signals.html': 'nav-signals',
+    'network.html': 'nav-network'
+  };
 
-  const base = typeof todayScore === "number" ? todayScore : 40;
-  const now = new Date();
-  const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  const id = map[page];
+  if (!id) return;
+  const el = document.getElementById(id);
+  if (el) el.classList.add('is-active');
+}
 
-  for (let i = 0; i < 7; i++) {
-    const d = new Date(now);
-    d.setDate(now.getDate() + i);
+/* Home / Today page */
+async function initTodayPage() {
+  const scoreEl = document.getElementById('today-score');
+  if (!scoreEl) return; // not on index
 
-    const label =
-      i === 0
-        ? "Today"
-        : i === 1
-        ? "Tomorrow"
-        : `${dayNames[d.getDay()]} ${d.getMonth() + 1}/${d.getDate()}`;
+  const phaseEl = document.getElementById('today-phase');
+  const illumEl = document.getElementById('today-illum');
+  const distanceEl = document.getElementById('today-distance');
+  const locationEl = document.getElementById('today-location');
+  const tagsWrap = document.getElementById('today-tags');
+  const messageEl = document.getElementById('today-message');
+  const chargeLabelEl = document.getElementById('today-charge-label');
 
-    // Simple synthetic trend for now – you can later swap this with real future data
-    const delta = (i === 0 ? 0 : (Math.sin(i) * 8).toFixed(0)) * 1;
-    const score = Math.max(0, Math.min(100, Math.round(base + delta)));
+  scoreEl.textContent = '–';
 
-    let tag = "Neutral";
-    if (score >= 70) tag = "High-charge";
-    else if (score >= 50) tag = "Charged";
-    else if (score <= 30) tag = "Low-charge";
+  const snapshot = await getTodayAstralSnapshot();
 
-    const row = document.createElement("div");
-    row.className = "timeline-row";
+  scoreEl.textContent = snapshot.score;
+  phaseEl.textContent = snapshot.phase.replace('_', ' ');
+  illumEl.textContent = `${snapshot.illumination}%`;
+  distanceEl.textContent =
+    snapshot.distanceKm > 0 ? `${snapshot.distanceKm.toLocaleString()} km` : '—';
+  locationEl.textContent = snapshot.locationLabel;
+  messageEl.textContent = snapshot.message;
 
-    const colDate = document.createElement("div");
-    colDate.innerHTML = `<strong>${label}</strong>`;
-
-    const colDesc = document.createElement("div");
-    colDesc.textContent =
-      i === 0
-        ? `Current window: ${phase || "lunar cycle"}`
-        : "Projected astral tension vs. today’s baseline.";
-
-    const colTag = document.createElement("div");
-    colTag.className = "timeline-pill";
-    colTag.textContent = `${score} · ${tag}`;
-
-    row.appendChild(colDate);
-    row.appendChild(colDesc);
-    row.appendChild(colTag);
-
-    container.appendChild(row);
+  const charge = classifyCharge(snapshot.score);
+  if (chargeLabelEl) {
+    chargeLabelEl.textContent = charge.label;
+    chargeLabelEl.classList.add(charge.className);
   }
-};
+
+  if (tagsWrap) {
+    tagsWrap.innerHTML = '';
+    snapshot.tags.forEach((tag) => {
+      const chip = document.createElement('span');
+      chip.className = 'tag-pill strong';
+      chip.textContent = tag;
+      tagsWrap.appendChild(chip);
+    });
+  }
+
+  // Build a simple line of text summarizing next 7 days for the home page
+  const forecastTextEl = document.getElementById('today-forecast-text');
+  if (forecastTextEl) {
+    const curve = buildSevenDayForecast(snapshot.score, snapshot.phase);
+    const maxScore = Math.max(...curve.map((d) => d.score));
+    const maxCharge = classifyCharge(maxScore);
+    forecastTextEl.textContent = `Based on today’s score of ${snapshot.score}, the week is projected to stay in the ${maxCharge.label.toLowerCase()} band.`;
+  }
+}
+
+/* Lunar cycle page */
+async function initLunarPage() {
+  const wrapper = document.getElementById('lunar-table-body');
+  if (!wrapper) return;
+
+  const headlineEl = document.getElementById('lunar-headline');
+
+  const snapshot = await getTodayAstralSnapshot();
+  const curve = buildSevenDayForecast(snapshot.score, snapshot.phase);
+
+  if (headlineEl) {
+    const charge = classifyCharge(snapshot.score);
+    headlineEl.textContent = `Based on today’s score of ${snapshot.score}, the next week trends as ${charge.label.toLowerCase()}.`;
+  }
+
+  wrapper.innerHTML = '';
+
+  const today = new Date();
+
+  curve.forEach((entry, idx) => {
+    const row = document.createElement('div');
+    row.className = 'table-row';
+
+    const dateCell = document.createElement('div');
+    if (idx === 0) {
+      dateCell.textContent = 'Today';
+    } else if (idx === 1) {
+      dateCell.textContent = 'Tomorrow';
+    } else {
+      const d = new Date(today);
+      d.setDate(today.getDate() + idx);
+      dateCell.textContent = d.toLocaleDateString(undefined, {
+        weekday: 'short',
+        month: 'short',
+        day: 'numeric'
+      });
+    }
+
+    const descCell = document.createElement('div');
+    descCell.textContent = entry.description;
+
+    const scoreCell = document.createElement('div');
+    const chip = document.createElement('span');
+    chip.className = `table-chip ${entry.chargeClass}`;
+    chip.textContent = `${entry.score} – ${entry.chargeLabel}`;
+    scoreCell.appendChild(chip);
+
+    row.appendChild(dateCell);
+    row.appendChild(descCell);
+    row.appendChild(scoreCell);
+
+    wrapper.appendChild(row);
+  });
+}
+
+/* Signals page – for now just re-use today’s score into copy */
+async function initSignalsPage() {
+  const el = document.getElementById('signals-summary');
+  if (!el) return;
+
+  const snapshot = await getTodayAstralSnapshot();
+  const charge = classifyCharge(snapshot.score);
+
+  el.textContent = `Today’s All Score is ${snapshot.score} (${charge.label}). In a full version of Conspira AI, this band would gate which Solana and BTC pairs show up in the signal feed and how aggressive entries are.`;
+}
