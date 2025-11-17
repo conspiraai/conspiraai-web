@@ -1,24 +1,26 @@
 /*
- * Conspira AI core palette
- * Dark background with bright ice-cream accents.
+ * Conspira AI – Color System
+ * Dark mode base + soft neon accents.
  */
 
 :root {
   /* Base */
-  --color-bg: #050714;
-  --color-bg-elevated: #0b0f23;
-  --color-bg-soft: #0f162e;
-  --color-text: #f5f7ff;
-  --color-text-muted: #8b92b7;
-  --color-border: #1b2140;
+  --bg-body: #050711;
+  --bg-elevated: #0d101c;
+  --bg-card: #101322;
+
+  --text-main: #f6f7fb;
+  --text-subtle: #9da3b8;
+  --text-muted: #6c7285;
 
   /* Accents */
-  --color-pink: #ff7ac4;
-  --color-blue: #7bdcff;
-  --color-mint: #8ef2c2;
-  --color-yellow: #ffe9a3;
+  --accent-pink: #ff7ac3;
+  --accent-blue: #7bd8ff;
+  --accent-mint: #7fffd4;
+  --accent-lemon: #ffe999;
 
-  /* Special */
-  --color-danger: #ff5c7a;
-  --shadow-soft: 0 22px 45px rgba(0, 0, 0, 0.7);
+  /* Utility */
+  --border-soft: #202334;
+  --shadow-soft: 0 20px 45px rgba(0, 0, 0, 0.7);
+  --radius-card: 18px;
 }
