@@ -3,253 +3,152 @@
   <head>
     <meta charset="utf-8" />
     <title>Conspira AI – Astral Intelligence Index</title>
-    <meta
-      name="description"
-      content="Conspira AI overlays lunar cycles and astral tension on top of crypto markets to surface high-probability volatility windows."
-    />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-
     <link rel="stylesheet" href="colors.css" />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
     <div class="page">
-      <div class="page-inner">
-        <!-- NAV -->
-        <header class="nav">
-          <div class="nav-brand">
-            <div class="nav-logo-orb"></div>
-            <div class="nav-brand-text">
-              <div class="nav-title">Conspira AI</div>
-              <div class="nav-subtitle">Astral Intelligence Index</div>
-            </div>
-          </div>
-          <nav class="nav-links">
-            <a href="#today" class="nav-link active">All Today</a>
-            <a href="#timeline" class="nav-link">Lunar Cycle</a>
-            <a href="#how-it-works" class="nav-link">Signals</a>
-            <a href="#network" class="nav-link">Network</a>
-          </nav>
-        </header>
-
-        <!-- HERO / AII CARD -->
-        <section class="hero" id="today">
+      <header class="shell site-header">
+        <div class="brand">
+          <div class="brand-mark"></div>
           <div>
-            <div class="hero-eyebrow">Astral Intelligence for Markets</div>
+            <div class="brand-text-main">Conspira AI</div>
+            <div class="brand-text-sub">ASTRAL INTELLIGENCE INDEX</div>
+          </div>
+        </div>
+
+        <nav class="nav">
+          <a id="nav-today" href="index.html">All Today</a>
+          <a id="nav-lunar" href="lunar-cycle.html">Lunar Cycle</a>
+          <a id="nav-signals" href="signals.html">Signals</a>
+          <a id="nav-network" href="network.html">Network</a>
+        </nav>
+      </header>
+
+      <main class="shell">
+        <section class="hero">
+          <div>
+            <div class="hero-copy-eyebrow">Astral intelligence for markets</div>
             <h1 class="hero-title">
-              Markets move <span>with the Moon.</span>
+              Markets move <span class="accent">with the Moon.</span>
             </h1>
-            <p class="hero-tagline">
-              Conspira AI tracks lunar intensity, eclipses, retrogrades, and
-              geomagnetic storms to map
-              <strong>cosmic tension</strong> onto crypto and market volatility.
+            <p class="hero-body">
+              Conspira AI tracks lunar intensity, eclipses, retrogrades, and geomagnetic storms to
+              map cosmic tension onto crypto and market volatility.
             </p>
 
-            <div class="hero-buttons">
-              <button class="btn btn-primary">View Today’s Astral Charge</button>
-              <button class="btn btn-secondary">Join the Signal Network</button>
+            <div class="hero-actions">
+              <a href="#today-index" class="btn btn-primary">View today’s Astral Charge</a>
+              <a href="network.html" class="btn btn-ghost">Join the Signal Network</a>
             </div>
 
-            <div class="hero-meta">
-              <div>
-                <div class="hero-meta-label">Primary focus</div>
-                <div>Solana &amp; crypto</div>
-              </div>
-              <div>
-                <div class="hero-meta-label">Signal Engine</div>
-                <div>Astral Intelligence Index (AII)</div>
-              </div>
+            <div class="hero-tags">
+              <span class="chip">Primary focus · Solana &amp; crypto</span>
+              <span class="chip">Signal engine · Astral Intelligence Index (All)</span>
             </div>
           </div>
 
-          <aside class="hero-card" aria-label="Astral Intelligence Index today">
-            <div class="card-header">Today’s Astral Intelligence Index</div>
-
-            <div class="card-score-row">
-              <div class="card-score-label">AII Score</div>
-              <div class="card-score-value">
-                <span id="ai-score">–</span><span class="unit">/ 100</span>
-              </div>
-            </div>
-
-            <div class="card-band" id="ai-band">Loading live data…</div>
-
-            <div class="card-tags">
-              <span class="chip">Lunar cycle overlay</span>
-              <span class="chip pink">Volatility watch</span>
-            </div>
-
-            <div class="card-grid">
+          <aside id="today-index" class="index-card">
+            <div class="index-card-header">
               <div>
-                <div class="card-grid-label">Moon phase</div>
-                <div class="card-grid-value" id="moon-phase">–</div>
+                <div class="index-label">Today’s Astral Intelligence Index</div>
+                <div class="meta-label" id="today-charge-label">Loading…</div>
               </div>
-              <div>
-                <div class="card-grid-label">Illumination</div>
-                <div class="card-grid-value" id="moon-illumination">–</div>
-              </div>
-              <div>
-                <div class="card-grid-label">Moon distance</div>
-                <div class="card-grid-value" id="moon-distance">–</div>
-              </div>
-              <div>
-                <div class="card-grid-label">Observer</div>
-                <div class="card-grid-value" id="location-label">
-                  Planet Earth
+              <div class="index-score-wrap">
+                <div class="index-score">
+                  <span id="today-score">–</span><span class="unit">/ 100</span>
                 </div>
+                <div class="index-tags" id="today-tags"></div>
               </div>
             </div>
 
-            <div class="card-note" id="ai-note">
-              Astral Intelligence Index uses lunar intensity, distance,
-              eclipse/retrograde windows and solar activity to flag when the
-              market is statistically more likely to move.
+            <div class="index-meta-grid">
+              <div>
+                <div class="meta-label">Moon phase</div>
+                <div class="meta-value" id="today-phase">–</div>
+              </div>
+              <div>
+                <div class="meta-label">Illumination</div>
+                <div class="meta-value" id="today-illum">–</div>
+              </div>
+              <div>
+                <div class="meta-label">Moon distance</div>
+                <div class="meta-value" id="today-distance">–</div>
+              </div>
+              <div>
+                <div class="meta-label">Observer</div>
+                <div class="meta-value" id="today-location">–</div>
+              </div>
             </div>
+
+            <div class="index-comment" id="today-message">
+              Pulling astral data…
+            </div>
+
+            <div class="index-comment" id="today-forecast-text"></div>
           </aside>
         </section>
 
-        <!-- HOW IT WORKS -->
-        <section class="section" id="how-it-works">
+        <section class="section">
           <div class="section-header">
             <h2 class="section-title">Astral Intelligence Index</h2>
             <p class="section-sub">
-              A single score from 0–100 measuring how charged the current window
-              is. Built as an overlay to price data, not a replacement for
-              risk management.
+              A single score from 0–100 that measures how cosmically charged the market window is.
+              It’s meant as an overlay to price and volume data, not a crystal ball.
             </p>
           </div>
 
           <div class="info-grid">
-            <article class="info-card">
-              <h3>What goes into the index</h3>
+            <article class="card">
+              <h3 class="card-title">What goes into the index</h3>
               <ul>
+                <li><strong>Lunar intensity</strong> – full & new moons, perigee / “supermoon” windows.</li>
+                <li><strong>Eclipse shock</strong> – chaos bands around solar & lunar eclipses.</li>
                 <li>
-                  <strong>Lunar intensity</strong> – full &amp; new moons,
-                  perigee/“supermoon” distance, dark-side new moon windows.
+                  <strong>Retrograde misfires</strong> – fakeouts & failed breakouts during key Mercury
+                  retrogrades.
                 </li>
                 <li>
-                  <strong>Eclipse shock</strong> – chaos bands around solar &amp;
-                  lunar eclipses.
+                  <strong>Solar storms</strong> – geomagnetic Kp spikes and attention-shifting solar events.
                 </li>
                 <li>
-                  <strong>Retrograde misfires</strong> – fakeouts and failed
-                  breakouts during key Mercury retrogrades.
-                </li>
-                <li>
-                  <strong>Solar storms</strong> – geomagnetic Kp spikes and
-                  attention-shifting solar events.
-                </li>
-                <li>
-                  <strong>Portal days</strong> – numerology dates that correlate
-                  with liquidity spikes.
+                  <strong>Portal days</strong> – numerology-aligned dates that correlate with liquidity spikes.
                 </li>
               </ul>
             </article>
 
-            <article class="info-card">
-              <h3>How to read the score</h3>
+            <article class="card">
+              <h3 class="card-title">How to read the score</h3>
               <ul>
-                <li><strong>0–20</strong> – Low charge: chop, reset, build lists.</li>
-                <li>
-                  <strong>20–40</strong> – Neutral: flows &amp; news matter more
-                  than stars.
-                </li>
-                <li>
-                  <strong>40–70</strong> – Charged: volatility window statistically
-                  elevated.
-                </li>
-                <li>
-                  <strong>70–100</strong> – High alert: strong probability of
-                  outsized moves.
-                </li>
+                <li><strong>0–20</strong> · Low charge – chop, reset, build lists.</li>
+                <li><strong>20–40</strong> · Neutral – flows & news matter more than stars.</li>
+                <li><strong>40–70</strong> · Charged – volatility window statistically elevated.</li>
+                <li><strong>70–100</strong> · High alert – strong probability of outsized moves.</li>
               </ul>
             </article>
           </div>
         </section>
 
-        <!-- TIMELINE -->
-        <section class="section" id="timeline">
+        <section class="section">
           <div class="section-header">
-            <h2 class="section-title">Lunar Cycle Window</h2>
+            <h2 class="section-title">Lunar cycle overlay</h2>
             <p class="section-sub">
-              A simple 7-day view of where we sit in the current lunar cycle and
-              how the charge is trending from here.
+              Want the full 7-day timeline? Pop into the dedicated lunar dashboard for a clean view
+              of how this week’s charge is trending.
             </p>
           </div>
 
-          <div class="timeline">
-            <div class="timeline-label-row">
-              <div class="timeline-label">Next 7 days</div>
-              <div id="timeline-summary" class="section-sub" style="font-size:0.78rem;">
-                Building lunar window…
-              </div>
-            </div>
-
-            <div id="timeline-rows" class="timeline-rows"></div>
-          </div>
+          <a href="lunar-cycle.html" class="btn btn-ghost">Open Lunar Cycle dashboard</a>
         </section>
+      </main>
 
-        <!-- NETWORK -->
-        <section class="section" id="network">
-          <div class="section-header">
-            <h2 class="section-title">Join the Conspira Network</h2>
-            <p class="section-sub">
-              Conspira AI is rolling out in phases: first as an astral oracle,
-              then as a full Solana-native dashboard and signal feed.
-            </p>
-          </div>
-
-          <div class="network-card">
-            <div class="network-list">
-              <div class="network-row">
-                <div class="network-label">X / Twitter</div>
-                <a
-                  href="https://x.com/conspira_ai"
-                  class="network-link"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  >@conspira_ai</a
-                >
-              </div>
-              <div class="network-row">
-                <div class="network-label">Domain</div>
-                <a
-                  href="https://conspiraai.com"
-                  class="network-link"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  >ConspiraAI.com</a
-                >
-              </div>
-              <div class="network-row">
-                <div class="network-label">Telegram</div>
-                <a
-                  href="https://t.me/ConspiraAI"
-                  class="network-link"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  >t.me/ConspiraAI</a
-                >
-              </div>
-              <div class="network-row">
-                <div class="network-label">Email</div>
-                <a
-                  href="mailto:conspiraai@gmail.com"
-                  class="network-link"
-                  >conspiraai@gmail.com</a
-                >
-              </div>
-            </div>
-          </div>
-
-          <div class="footer">
-            © Conspira AI 2025 · Astrology Meets Alpha
-          </div>
-        </section>
-      </div>
+      <footer class="shell site-footer">
+        © Conspira AI 2025 · Astrology Meets Alpha
+      </footer>
     </div>
 
-    <script src="astral.js" defer></script>
-    <script src="script.js" defer></script>
+    <script src="astral.js"></script>
+    <script src="script.js"></script>
   </body>
 </html>
