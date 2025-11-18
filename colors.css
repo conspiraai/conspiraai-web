@@ -1,41 +1,31 @@
-/* Central color tokens for Conspira AI */
+/*
+ * Conspira AI colour system
+ * Dark base + ice pink / ice blue / ice yellow + solar coral accents.
+ */
 
 :root {
   /* Base */
-  --color-bg: #050714;
-  --color-surface: #0c1021;
-  --color-surface-soft: #11162a;
-  --color-surface-elevated: #171d32;
-  --color-border-subtle: #252c40;
+  --color-bg: #020616;
+  --color-bg-soft: #05091f;
+  --color-surface: #070b23;
+  --color-surface-alt: #0b102b;
 
-  --color-text: #e6ecff;
-  --color-text-soft: #a5afc9;
-  --color-text-muted: #7983a0;
+  --color-text: #e5e7eb;
+  --color-text-soft: #9ca3af;
+  --color-border: #1f2937;
+  --color-border-soft: #111827;
 
-  /* Pastel brand accents */
+  /* Brand palette */
   --color-ice-pink: #ff8ad6;
-  --color-mint: #9ff8cc;
-  --color-baby-blue: #a4d4ff;
-  --color-solar-red: #ff5242;
+  --color-ice-blue: #7fdbff;
+  --color-ice-yellow: #fff7a8;
+  --color-solar-coral: #ff5242;
 
-  /* Primary / secondary */
-  --color-primary: var(--color-baby-blue);
-  --color-primary-soft: rgba(164, 212, 255, 0.15);
-  --color-primary-strong: #80b9ff;
+  /* Derived accents */
+  --color-primary: var(--color-ice-pink);
+  --color-primary-soft: rgba(255, 138, 214, 0.18);
+  --color-primary-strong: #ff5dbf;
 
-  --color-secondary: var(--color-ice-pink);
-  --color-secondary-soft: rgba(255, 138, 214, 0.18);
-
-  /* Status */
-  --color-low: #6ee7b7;
-  --color-neutral: #facc6b;
-  --color-charged: #fb923c;
-  --color-high: var(--color-solar-red);
-
-  /* Misc */
-  --color-chip-bg: rgba(255, 255, 255, 0.04);
-  --shadow-soft: 0 18px 45px rgba(0, 0, 0, 0.6);
-  --radius-lg: 24px;
-  --radius-md: 16px;
-  --radius-pill: 999px;
+  --color-success: #22c55e;
+  --color-danger: #f97373;
 }
