@@ -1,150 +1,143 @@
 /*
-  Astral data + index logic for Conspira AI
-  Uses ipgeolocation.io astronomy API with your key.
-*/
+ * Conspira AI – astral.js
+ * Fetches live lunar data from ipgeolocation.io and computes the Astral Intelligence Index (AII).
+ * API key is visible by design (frontend-only MVP).
+ */
 
 const IPGEO_API_KEY = '82fd924c51bf4ac48bd9c64119b1d606';
-const IPGEO_URL = `https://api.ipgeolocation.io/astronomy?apiKey=${IPGEO_API_KEY}`;
+const IPGEO_ENDPOINT = `https://api.ipgeolocation.io/astronomy?apiKey=${IPGEO_API_KEY}`;
 
-/**
- * Fetch today's astronomy snapshot.
- * Returns a normalized object even if the API fails.
- */
-async function getTodayAstralSnapshot() {
+// Basic fetch with error handling
+async function fetchLunarData() {
   try {
-    const res = await fetch(IPGEO_URL);
-    if (!res.ok) throw new Error('Astronomy API error');
+    const res = await fetch(IPGEO_ENDPOINT);
+    if (!res.ok) throw new Error('Non-200 response');
     const data = await res.json();
 
-    const phase = (data.moon_phase || '').toUpperCase();
-    const illumination = Number(data.moon_illumination || 0);
-    const distanceKm = Number(data.moon_distance || 0);
-    const locationLabel = data.location || 'Your location';
-
-    const score = computeAstralIndex(phase, illumination);
-    const tags = buildWindowTags(phase, score);
-    const message = buildDailyMessage(phase, score);
-
     return {
-      phase,
-      illumination,
-      distanceKm,
-      locationLabel,
-      score,
-      tags,
-      message
+      date: new Date(),
+      moonPhase: data.moon_phase,
+      moonIllumination: Number(data.moon_illumination),
+      moonrise: data.moonrise,
+      moonset: data.moonset,
+      moonDistanceKm: data.moon_distance,
+      sunDistanceKm: data.sun_distance
     };
   } catch (err) {
-    console.error('Astral snapshot error:', err);
-
-    // Fallback – sane defaults when API fails
-    const phase = 'WAXING_CRESCENT';
-    const illumination = 23;
-    const distanceKm = 403000;
-    const score = computeAstralIndex(phase, illumination);
-    const tags = buildWindowTags(phase, score);
-    const message =
-      'Fallback data: treat this as a soft signal only. Overlay with price action and volume.';
-
-    return {
-      phase,
-      illumination,
-      distanceKm,
-      locationLabel: 'Fallback',
-      score,
-      tags,
-      message
-    };
+    console.error('Error fetching lunar data:', err);
+    return null;
   }
 }
 
-/**
- * Simple scoring model: 0–100
- * Full / New / Perigee windows bias higher.
- */
-function computeAstralIndex(phase, illumination) {
-  let base = 10;
+// Simple score model: illumination + phase bands
+function computeAII(lunar) {
+  if (!lunar) return null;
 
-  const intensePhases = ['FULL_MOON', 'NEW_MOON'];
-  const chargedPhases = ['WAXING_GIBBOUS', 'WANING_GIBBOUS'];
-  const neutralPhases = ['FIRST_QUARTER', 'LAST_QUARTER'];
+  const illum = isNaN(lunar.moonIllumination) ? 50 : lunar.moonIllumination;
+  const phase = (lunar.moonPhase || '').toLowerCase();
 
-  if (intensePhases.includes(phase)) base += 40;
-  else if (chargedPhases.includes(phase)) base += 25;
-  else if (neutralPhases.includes(phase)) base += 15;
-  else base += 8;
+  let phaseWeight = 0.2; // default
 
-  // Illumination weighting
-  base += illumination * 0.25;
+  if (phase.includes('full')) phaseWeight = 0.7;
+  else if (phase.includes('new')) phaseWeight = 0.6;
+  else if (phase.includes('gibbous')) phaseWeight = 0.45;
+  else if (phase.includes('quarter')) phaseWeight = 0.35;
+  else if (phase.includes('crescent')) phaseWeight = 0.25;
 
-  // Clamp
-  if (base < 0) base = 0;
-  if (base > 100) base = 100;
+  // Normalise illumination: 0–100 → 0–1
+  const normIllum = Math.max(0, Math.min(illum, 100)) / 100;
 
-  return Math.round(base);
+  // Index 0–100
+  let score = (normIllum * 50) + (phaseWeight * 50);
+  score = Math.round(Math.max(0, Math.min(score, 100)));
+
+  return score;
 }
 
-/**
- * Charge labels used for color-coding.
- */
-function classifyCharge(score) {
-  if (score < 20) return { label: 'Low-charge', className: 'charge-low' };
-  if (score < 40) return { label: 'Neutral', className: 'charge-neutral' };
-  if (score < 70) return { label: 'Charged', className: 'charge-charged' };
-  return { label: 'High alert', className: 'charge-high' };
+function formatTime(dateObj) {
+  if (!(dateObj instanceof Date)) return '–';
+  return dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 }
 
-function buildWindowTags(phase, score) {
-  const tags = [];
-
-  if (['FULL_MOON', 'NEW_MOON'].includes(phase)) tags.push('Lunar cycle overlay');
-  if (score >= 40 && score < 70) tags.push('Volatility watch');
-  if (score >= 70) tags.push('High-tension window');
-
-  return tags;
+function formatDate(dateObj) {
+  if (!(dateObj instanceof Date)) return '–';
+  return dateObj.toLocaleDateString([], { month: 'short', day: 'numeric' });
 }
 
-function buildDailyMessage(phase, score) {
-  const { label } = classifyCharge(score);
+// Generate a short summary string for the index
+function buildSummary(lunar, score) {
+  if (!lunar || score == null) return 'Unable to load astral conditions.';
 
-  if (score < 20)
-    return 'Better for accumulation, journaling, and resets. Expect quieter moves unless news overrides.';
-  if (score < 40)
-    return 'Flows and news matter more than the stars. Use this as a soft overlay, not a driver.';
-  if (score < 70)
-    return 'Window statistically tilts toward elevated volatility. Watch for fakeouts and liquidity grabs.';
-  return 'High-alert band. Historically associated with outsized moves and liquidation cascades. Size down and stay nimble.';
-}
+  const phase = (lunar.moonPhase || '').toLowerCase();
+  let band = 'calm';
+  if (score >= 70) band = 'extreme';
+  else if (score >= 36) band = 'charged';
 
-/**
- * Build a 7-day synthetic forecast from today’s score.
- * Just a directional curve, not real future astronomy.
- */
-function buildSevenDayForecast(todayScore, todayPhase) {
-  const days = [];
-  const labels = ['Today', 'Tomorrow', 'Day 3', 'Day 4', 'Day 5', 'Day 6', 'Day 7'];
+  let hook = '';
 
-  for (let i = 0; i < 7; i++) {
-    // simple curve – soften away from today
-    const delta = i === 0 ? 0 : (i <= 3 ? 6 - 2 * i : -4 + (i - 3) * 2);
-    let score = todayScore + delta;
-    if (score < 0) score = 0;
-    if (score > 100) score = 100;
-
-    const charge = classifyCharge(score);
-    const desc =
-      i === 0
-        ? 'Current astral tension vs. baseline.'
-        : 'Projected astral tension vs. today’s baseline.';
-
-    days.push({
-      label: labels[i],
-      description: desc,
-      score,
-      chargeLabel: charge.label,
-      chargeClass: charge.className
-    });
+  if (band === 'extreme') {
+    hook = 'Expect unstable or sharp moves around key levels.';
+  } else if (band === 'charged') {
+    hook = 'Watch for accelerations, fakeouts and expansion days.';
+  } else {
+    hook = 'Tape is more likely to behave “normally”, but risk still applies.';
   }
 
-  return days;
+  let phaseNote = '';
+  if (phase.includes('full')) phaseNote = 'Full-moon regime often aligns with emotional and liquidity extremes.';
+  else if (phase.includes('new')) phaseNote = 'New-moon corridors lean toward trend resets and positioning shifts.';
+  else if (phase.includes('gibbous')) phaseNote = 'Gibbous windows often sit inside broader swing moves.';
+  else if (phase.includes('crescent') || phase.includes('quarter')) phaseNote = 'Transitional phases between major regime shifts.';
+
+  return `AII: ${score} (${band}). ${hook} ${phaseNote}`;
 }
+
+// Populate elements if they exist
+function setText(id, value) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = value;
+}
+
+// Main init
+async function initAstral() {
+  const lunar = await fetchLunarData();
+  if (!lunar) {
+    setText('aii-summary', 'Unable to fetch astral data right now.');
+    setText('lunar-note', 'Unable to fetch astral data right now.');
+    setText('signals-summary', 'Unable to fetch astral data right now.');
+    return;
+  }
+
+  const score = computeAII(lunar);
+  const summary = buildSummary(lunar, score);
+
+  // Home (index)
+  if (document.body.dataset.page === 'today') {
+    if (score != null) setText('aii-value', score);
+    setText('aii-phase', lunar.moonPhase || '–');
+    setText('aii-illumination', isNaN(lunar.moonIllumination) ? '–' : `${lunar.moonIllumination}%`);
+    const ts = `${formatDate(lunar.date)} · ${formatTime(lunar.date)}`;
+    setText('aii-updated', ts);
+    setText('aii-summary', summary);
+  }
+
+  // Lunar page
+  if (document.body.dataset.page === 'lunar') {
+    setText('lunar-phase', lunar.moonPhase || '–');
+    setText('lunar-illumination', isNaN(lunar.moonIllumination) ? '–' : `${lunar.moonIllumination}%`);
+    setText('lunar-rise', lunar.moonrise || '–');
+    setText('lunar-set', lunar.moonset || '–');
+    setText('lunar-distance', lunar.moonDistanceKm ? `${lunar.moonDistanceKm} km` : '–');
+    setText('lunar-note', summary);
+  }
+
+  // Signals page
+  if (document.body.dataset.page === 'signals') {
+    if (score != null) setText('signals-aii', score);
+    setText('signals-phase', lunar.moonPhase || '–');
+    setText('signals-illumination', isNaN(lunar.moonIllumination) ? '–' : `${lunar.moonIllumination}%`);
+    setText('signals-summary', summary);
+  }
+}
+
+document.addEventListener('DOMContentLoaded', initAstral);
