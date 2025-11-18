@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="colors.css" />
     <link rel="stylesheet" href="styles.css" />
   </head>
-  <body>
+  <body data-page="signals">
     <div class="page">
       <header class="shell site-header">
         <div class="brand">
@@ -26,33 +26,82 @@
         </nav>
       </header>
 
-      <main class="shell">
+      <main class="shell main">
         <section class="section">
           <div class="section-header">
-            <h1 class="section-title">Signals (Preview)</h1>
-            <p class="section-sub" id="signals-summary">
-              Loading today’s astral band…
+            <h1 class="section-title">Signal Lab</h1>
+            <p class="section-sub">
+              This v1 Signals page is a concept preview. The live AII is real. The
+              modules below outline where this is headed for traders.
             </p>
           </div>
 
-          <div class="info-grid">
+          <div class="grid grid-3">
             <article class="card">
-              <h3 class="card-title">Solana focus</h3>
-              <ul>
-                <li>Signal universe: SOL majors + curated microcaps.</li>
-                <li>Filters by astral band: risk-on setups only when the Index is charged or higher.</li>
-                <li>Plan: straight-through links to Jupiter / Pump.fun once we go full send.</li>
-              </ul>
+              <h3>Volatility windows</h3>
+              <p>
+                Tie AII spikes to specific assets (BTC, ETH, SOL, meme coins) and
+                flag “charged” windows. Think: alerts when the sky + orderflow go
+                out of sync.
+              </p>
             </article>
+
             <article class="card">
-              <h3 class="card-title">How this will work</h3>
-              <ul>
-                <li>Conspira AI ingests market data + astral data.</li>
-                <li>Scores each pair → tags with “astro-confirmed” or “flow-only”.</li>
-                <li>Web app here becomes the front door for the live feed.</li>
-              </ul>
+              <h3>Risk scanner</h3>
+              <p>
+                Input a trade idea, get a “cosmic tension score” (low / medium /
+                high) based on the current astral regime. Use it as a sanity check,
+                not a signal generator.
+              </p>
+            </article>
+
+            <article class="card">
+              <h3>Custom indices</h3>
+              <p>
+                Future versions will let you build your own composite indices:
+                weight lunar phases, eclipses, geomagnetic activity and more to
+                match your strategy.
+              </p>
             </article>
           </div>
+
+          <section class="section">
+            <div class="section-header">
+              <h2 class="section-title">Today’s astral read</h2>
+              <p class="section-sub">
+                A simple one-glance summary you could pair with your trading
+                terminal.
+              </p>
+            </div>
+
+            <div class="grid grid-2">
+              <article class="card">
+                <h3>Live AII snapshot</h3>
+                <div class="aii-inline">
+                  <div class="aii-inline-value" id="signals-aii">–</div>
+                  <div class="aii-inline-meta">
+                    <div><strong>Phase:</strong> <span id="signals-phase">–</span></div>
+                    <div><strong>Illumination:</strong> <span id="signals-illumination">–</span></div>
+                  </div>
+                </div>
+                <p class="aii-footnote" id="signals-summary">
+                  Loading astral snapshot…
+                </p>
+              </article>
+
+              <article class="card">
+                <h3>How to use this</h3>
+                <ul class="bullet-list">
+                  <li>High AII + breakout → respect risk and avoid revenge trades.</li>
+                  <li>Low AII → expect more “normal” tape, but still manage risk.</li>
+                  <li>
+                    Don’t blindly follow the sky—use this as another lens on timing,
+                    not a position generator.
+                  </li>
+                </ul>
+              </article>
+            </div>
+          </section>
         </section>
       </main>
 
