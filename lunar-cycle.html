@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="colors.css" />
     <link rel="stylesheet" href="styles.css" />
   </head>
-  <body>
+  <body data-page="lunar">
     <div class="page">
       <header class="shell site-header">
         <div class="brand">
@@ -26,22 +26,59 @@
         </nav>
       </header>
 
-      <main class="shell">
+      <main class="shell main">
         <section class="section">
           <div class="section-header">
-            <h1 class="section-title">Lunar Cycle Window</h1>
-            <p class="section-sub" id="lunar-headline">
-              Loading today’s astral score to project the next 7 days…
+            <h1 class="section-title">Lunar Cycle Dashboard</h1>
+            <p class="section-sub">
+              Live moon data from the current sky. Use this page to understand how
+              today’s phase and illumination fit into the broader cycle.
             </p>
           </div>
 
-          <div class="table-shell">
-            <div class="table-header">
-              <div>Day</div>
-              <div>Comment</div>
-              <div>Charge</div>
-            </div>
-            <div id="lunar-table-body"></div>
+          <div class="grid grid-2">
+            <article class="card">
+              <h3>Current lunar state</h3>
+              <dl class="lunar-meta">
+                <div>
+                  <dt>Moon phase</dt>
+                  <dd id="lunar-phase">–</dd>
+                </div>
+                <div>
+                  <dt>Illumination</dt>
+                  <dd id="lunar-illumination">–</dd>
+                </div>
+                <div>
+                  <dt>Moonrise</dt>
+                  <dd id="lunar-rise">–</dd>
+                </div>
+                <div>
+                  <dt>Moonset</dt>
+                  <dd id="lunar-set">–</dd>
+                </div>
+                <div>
+                  <dt>Distance</dt>
+                  <dd id="lunar-distance">–</dd>
+                </div>
+              </dl>
+              <p class="aii-footnote" id="lunar-note">
+                Loading live astronomy data…
+              </p>
+            </article>
+
+            <article class="card">
+              <h3>Astral context</h3>
+              <p id="lunar-context">
+                The AII engine treats full and new moon corridors, fast
+                illumination changes and eclipse windows as higher-tension periods.
+                As this product evolves, this page will also show historical
+                correlations between these windows and market volatility.
+              </p>
+              <p class="section-sub">
+                Coming upgrades: correlation stats vs. BTC / ETH / SOL, tension
+                bands, and a more detailed cosmic calendar.
+              </p>
+            </article>
           </div>
         </section>
       </main>
