@@ -4,10 +4,14 @@
     <meta charset="utf-8" />
     <title>Conspira AI – Astral Intelligence Index</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Conspira AI maps lunar cycles and astral conditions against market volatility to create an Astral Intelligence Index for crypto and macro traders."
+    />
     <link rel="stylesheet" href="colors.css" />
     <link rel="stylesheet" href="styles.css" />
   </head>
-  <body>
+  <body data-page="today">
     <div class="page">
       <header class="shell site-header">
         <div class="brand">
@@ -26,120 +30,137 @@
         </nav>
       </header>
 
-      <main class="shell">
-        <section class="hero">
-          <div>
-            <div class="hero-copy-eyebrow">Astral intelligence for markets</div>
-            <h1 class="hero-title">
-              Markets move <span class="accent">with the Moon.</span>
-            </h1>
-            <p class="hero-body">
-              Conspira AI tracks lunar intensity, eclipses, retrogrades, and geomagnetic storms to
-              map cosmic tension onto crypto and market volatility.
+      <main class="shell main">
+        <!-- HERO / AII -->
+        <section class="section hero">
+          <div class="hero-copy">
+            <h1>Signals from the sky.<br />Data from the markets.</h1>
+            <p class="hero-sub">
+              Conspira AI is an astral surveillance protocol for volatility windows.
+              We map lunar cycles and astral conditions against market behaviour to
+              generate a live <strong>Astral Intelligence Index (AII)</strong>.
             </p>
-
-            <div class="hero-actions">
-              <a href="#today-index" class="btn btn-primary">View today’s Astral Charge</a>
-              <a href="network.html" class="btn btn-ghost">Join the Signal Network</a>
-            </div>
-
-            <div class="hero-tags">
-              <span class="chip">Primary focus · Solana &amp; crypto</span>
-              <span class="chip">Signal engine · Astral Intelligence Index (All)</span>
-            </div>
+            <p class="hero-tag">
+              Not vibes. Not tarot. A structured index that traders can track.
+            </p>
           </div>
 
-          <aside id="today-index" class="index-card">
-            <div class="index-card-header">
-              <div>
-                <div class="index-label">Today’s Astral Intelligence Index</div>
-                <div class="meta-label" id="today-charge-label">Loading…</div>
-              </div>
-              <div class="index-score-wrap">
-                <div class="index-score">
-                  <span id="today-score">–</span><span class="unit">/ 100</span>
-                </div>
-                <div class="index-tags" id="today-tags"></div>
-              </div>
+          <div class="aii-card">
+            <div class="aii-header">
+              <span class="pill pill-live">LIVE</span>
+              <span class="aii-label">Astral Intelligence Index</span>
             </div>
-
-            <div class="index-meta-grid">
-              <div>
-                <div class="meta-label">Moon phase</div>
-                <div class="meta-value" id="today-phase">–</div>
-              </div>
-              <div>
-                <div class="meta-label">Illumination</div>
-                <div class="meta-value" id="today-illum">–</div>
-              </div>
-              <div>
-                <div class="meta-label">Moon distance</div>
-                <div class="meta-value" id="today-distance">–</div>
-              </div>
-              <div>
-                <div class="meta-label">Observer</div>
-                <div class="meta-value" id="today-location">–</div>
-              </div>
+            <div class="aii-value" id="aii-value">–</div>
+            <div class="aii-scale">
+              <span>Calm</span>
+              <span>Charged</span>
+              <span>Extreme</span>
             </div>
-
-            <div class="index-comment" id="today-message">
-              Pulling astral data…
-            </div>
-
-            <div class="index-comment" id="today-forecast-text"></div>
-          </aside>
+            <dl class="aii-meta">
+              <div>
+                <dt>Moon phase</dt>
+                <dd id="aii-phase">–</dd>
+              </div>
+              <div>
+                <dt>Illumination</dt>
+                <dd id="aii-illumination">–</dd>
+              </div>
+              <div>
+                <dt>Last update</dt>
+                <dd id="aii-updated">–</dd>
+              </div>
+            </dl>
+            <p class="aii-footnote" id="aii-summary">
+              Fetching live astral conditions…
+            </p>
+          </div>
         </section>
 
+        <!-- HOW IT WORKS -->
         <section class="section">
           <div class="section-header">
-            <h2 class="section-title">Astral Intelligence Index</h2>
+            <h2 class="section-title">How Conspira AI reads the astral tape</h2>
             <p class="section-sub">
-              A single score from 0–100 that measures how cosmically charged the market window is.
-              It’s meant as an overlay to price and volume data, not a crystal ball.
+              The AII is a composite score built from lunar mechanics, geometrics and
+              historical market response during charged windows.
             </p>
           </div>
 
-          <div class="info-grid">
+          <div class="grid grid-3">
             <article class="card">
-              <h3 class="card-title">What goes into the index</h3>
-              <ul>
-                <li><strong>Lunar intensity</strong> – full & new moons, perigee / “supermoon” windows.</li>
-                <li><strong>Eclipse shock</strong> – chaos bands around solar & lunar eclipses.</li>
-                <li>
-                  <strong>Retrograde misfires</strong> – fakeouts & failed breakouts during key Mercury
-                  retrogrades.
-                </li>
-                <li>
-                  <strong>Solar storms</strong> – geomagnetic Kp spikes and attention-shifting solar events.
-                </li>
-                <li>
-                  <strong>Portal days</strong> – numerology-aligned dates that correlate with liquidity spikes.
-                </li>
-              </ul>
+              <h3>Lunar mechanics</h3>
+              <p>
+                We pull live astronomy data (phase, illumination, rise / set times)
+                from the current sky over Earth. Full and new moon corridors, eclipses
+                and sharp illumination swings are weighted more heavily.
+              </p>
             </article>
 
             <article class="card">
-              <h3 class="card-title">How to read the score</h3>
-              <ul>
-                <li><strong>0–20</strong> · Low charge – chop, reset, build lists.</li>
-                <li><strong>20–40</strong> · Neutral – flows & news matter more than stars.</li>
-                <li><strong>40–70</strong> · Charged – volatility window statistically elevated.</li>
-                <li><strong>70–100</strong> · High alert – strong probability of outsized moves.</li>
-              </ul>
+              <h3>Volatility regimes</h3>
+              <p>
+                Certain phases and windows historically line up with outsized
+                volatility and liquidity imbalances. We treat these as “charged
+                regimes” and amplify them in the index.
+              </p>
+            </article>
+
+            <article class="card">
+              <h3>Astral stress score</h3>
+              <p>
+                The AII compresses this into a 0–100 score with simple bands:
+                <strong>0–35</strong> calm, <strong>36–69</strong> charged,
+                <strong>70–100</strong> extreme. It’s not directional alpha yet,
+                but it tells you when to respect the tape.
+              </p>
             </article>
           </div>
         </section>
 
+        <!-- QUICK LINKS TO OTHER DASHBOARDS -->
         <section class="section">
           <div class="section-header">
-            <h2 class="section-title">Lunar cycle overlay</h2>
+            <h2 class="section-title">Dashboards in this build</h2>
             <p class="section-sub">
-              Want the full 7-day timeline? Pop into the dedicated lunar dashboard for a clean view
-              of how this week’s charge is trending.
+              This v1 is a public cockpit. Deeper tools (backtesting, alerts, custom
+              indices) are already on the roadmap.
             </p>
           </div>
 
-          <a href="lunar-cycle.html" class="btn btn-ghost">Open Lunar Cycle dashboard</a>
+          <div class="grid grid-3">
+            <a class="card-link" href="lunar-cycle.html">
+              <article class="card card-link-inner">
+                <h3>Lunar Cycle</h3>
+                <p>
+                  Detailed moon data: phase, illumination, rise / set and a simple
+                  forward view of upcoming charged windows.
+                </p>
+                <span class="card-cta">Open lunar dashboard →</span>
+              </article>
+            </a>
+
+            <a class="card-link" href="signals.html">
+              <article class="card card-link-inner">
+                <h3>Signals</h3>
+                <p>
+                  Concept space for volatility predictors, tension scores and future
+                  integrations with Solana orderflow and on-chain data.
+                </p>
+                <span class="card-cta">View signal concepts →</span>
+              </article>
+            </a>
+
+            <a class="card-link" href="network.html">
+              <article class="card card-link-inner">
+                <h3>Network</h3>
+                <p>
+                  Get plugged into the Conspira AI network—X, Telegram, and future
+                  protocol updates.
+                </p>
+                <span class="card-cta">Join the network →</span>
+              </article>
+            </a>
+          </div>
         </section>
       </main>
 
