@@ -7,6 +7,14 @@
 const IPGEO_API_KEY = '82fd924c51bf4ac48bd9c64119b1d606';
 const IPGEO_ENDPOINT = `https://api.ipgeolocation.io/astronomy?apiKey=${IPGEO_API_KEY}`;
 
+// Safely parse moon_illumination (handles strings like "4.3" or "4.3%")
+function parseIllumination(raw) {
+  if (raw == null) return NaN;
+  const cleaned = String(raw).replace('%', '').trim().replace(',', '.');
+  const num = parseFloat(cleaned);
+  return isNaN(num) ? NaN : num;
+}
+
 // Basic fetch with error handling
 async function fetchLunarData() {
   try {
@@ -14,10 +22,16 @@ async function fetchLunarData() {
     if (!res.ok) throw new Error('Non-200 response');
     const data = await res.json();
 
+    const moonIllumination = parseIllumination(data.moon_illumination);
+
+    // Debug log (you can comment this out later)
+    console.log('Astronomy payload:', data);
+    console.log('Parsed moonIllumination:', moonIllumination);
+
     return {
       date: new Date(),
       moonPhase: data.moon_phase,
-      moonIllumination: Number(data.moon_illumination),
+      moonIllumination,
       moonrise: data.moonrise,
       moonset: data.moonset,
       moonDistanceKm: data.moon_distance,
@@ -33,7 +47,7 @@ async function fetchLunarData() {
 function computeAII(lunar) {
   if (!lunar) return null;
 
-  const illum = isNaN(lunar.moonIllumination) ? 50 : lunar.moonIllumination;
+  const illum = isNaN(lunar.moonIllumination) ? 0 : lunar.moonIllumination;
   const phase = (lunar.moonPhase || '').toLowerCase();
 
   let phaseWeight = 0.2; // default
