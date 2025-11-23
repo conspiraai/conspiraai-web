@@ -129,7 +129,10 @@ async function initAstral() {
   if (document.body.dataset.page === 'today') {
     if (score != null) setText('aii-value', score);
     setText('aii-phase', lunar.moonPhase || '–');
-    setText('aii-illumination', isNaN(lunar.moonIllumination) ? '–' : `${lunar.moonIllumination}%`);
+    setText(
+      'aii-illumination',
+      isNaN(lunar.moonIllumination) ? '–' : `${lunar.moonIllumination}%`
+    );
     const ts = `${formatDate(lunar.date)} · ${formatTime(lunar.date)}`;
     setText('aii-updated', ts);
     setText('aii-summary', summary);
@@ -138,10 +141,16 @@ async function initAstral() {
   // Lunar page
   if (document.body.dataset.page === 'lunar') {
     setText('lunar-phase', lunar.moonPhase || '–');
-    setText('lunar-illumination', isNaN(lunar.moonIllumination) ? '–' : `${lunar.moonIllumination}%`);
+    setText(
+      'lunar-illumination',
+      isNaN(lunar.moonIllumination) ? '–' : `${lunar.moonIllumination}%`
+    );
     setText('lunar-rise', lunar.moonrise || '–');
     setText('lunar-set', lunar.moonset || '–');
-    setText('lunar-distance', lunar.moonDistanceKm ? `${lunar.moonDistanceKm} km` : '–');
+    setText(
+      'lunar-distance',
+      lunar.moonDistanceKm ? `${lunar.moonDistanceKm} km` : '–'
+    );
     setText('lunar-note', summary);
   }
 
@@ -149,7 +158,10 @@ async function initAstral() {
   if (document.body.dataset.page === 'signals') {
     if (score != null) setText('signals-aii', score);
     setText('signals-phase', lunar.moonPhase || '–');
-    setText('signals-illumination', isNaN(lunar.moonIllumination) ? '–' : `${lunar.moonIllumination}%`);
+    setText(
+      'signals-illumination',
+      isNaN(lunar.moonIllumination) ? '–' : `${lunar.moonIllumination}%`
+    );
     setText('signals-summary', summary);
   }
 }
