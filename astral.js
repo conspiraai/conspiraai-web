@@ -5,7 +5,12 @@
  */
 
 const IPGEO_API_KEY = '82fd924c51bf4ac48bd9c64119b1d606';
-const IPGEO_ENDPOINT = `https://api.ipgeolocation.io/astronomy?apiKey=${IPGEO_API_KEY}`;
+
+// IMPORTANT: include a location so the API returns valid data
+// Lunar phase/illumination are global, location mostly affects rise/set times.
+// You can change this city if you want, it won't break the astral logic.
+const IPGEO_ENDPOINT =
+  `https://api.ipgeolocation.io/astronomy?apiKey=${IPGEO_API_KEY}&location=New York,USA`;
 
 // Safely parse moon_illumination (handles strings like "4.3" or "4.3%")
 function parseIllumination(raw) {
@@ -24,7 +29,7 @@ async function fetchLunarData() {
 
     const moonIllumination = parseIllumination(data.moon_illumination);
 
-    // Debug log (you can comment this out later)
+    // Debug log (safe to leave on for now; remove later if you want)
     console.log('Astronomy payload:', data);
     console.log('Parsed moonIllumination:', moonIllumination);
 
@@ -35,7 +40,7 @@ async function fetchLunarData() {
       moonrise: data.moonrise,
       moonset: data.moonset,
       moonDistanceKm: data.moon_distance,
-      sunDistanceKm: data.sun_distance
+      sunDistanceKm: data.sun_distance,
     };
   } catch (err) {
     console.error('Error fetching lunar data:', err);
@@ -98,10 +103,15 @@ function buildSummary(lunar, score) {
   }
 
   let phaseNote = '';
-  if (phase.includes('full')) phaseNote = 'Full-moon regime often aligns with emotional and liquidity extremes.';
-  else if (phase.includes('new')) phaseNote = 'New-moon corridors lean toward trend resets and positioning shifts.';
-  else if (phase.includes('gibbous')) phaseNote = 'Gibbous windows often sit inside broader swing moves.';
-  else if (phase.includes('crescent') || phase.includes('quarter')) phaseNote = 'Transitional phases between major regime shifts.';
+  if (phase.includes('full')) {
+    phaseNote = 'Full-moon regime often aligns with emotional and liquidity extremes.';
+  } else if (phase.includes('new')) {
+    phaseNote = 'New-moon corridors lean toward trend resets and positioning shifts.';
+  } else if (phase.includes('gibbous')) {
+    phaseNote = 'Gibbous windows often sit inside broader swing moves.';
+  } else if (phase.includes('crescent') || phase.includes('quarter')) {
+    phaseNote = 'Transitional phases between major regime shifts.';
+  }
 
   return `AII: ${score} (${band}). ${hook} ${phaseNote}`;
 }
@@ -131,7 +141,7 @@ async function initAstral() {
     setText('aii-phase', lunar.moonPhase || '–');
     setText(
       'aii-illumination',
-      isNaN(lunar.moonIllumination) ? '–' : `${lunar.moonIllumination}%`
+      isNaN(lunar.moonIllumination) ? '–' : `${lunar.moonIllumination.toFixed(1)}%`
     );
     const ts = `${formatDate(lunar.date)} · ${formatTime(lunar.date)}`;
     setText('aii-updated', ts);
@@ -143,14 +153,11 @@ async function initAstral() {
     setText('lunar-phase', lunar.moonPhase || '–');
     setText(
       'lunar-illumination',
-      isNaN(lunar.moonIllumination) ? '–' : `${lunar.moonIllumination}%`
+      isNaN(lunar.moonIllumination) ? '–' : `${lunar.moonIllumination.toFixed(1)}%`
     );
     setText('lunar-rise', lunar.moonrise || '–');
     setText('lunar-set', lunar.moonset || '–');
-    setText(
-      'lunar-distance',
-      lunar.moonDistanceKm ? `${lunar.moonDistanceKm} km` : '–'
-    );
+    setText('lunar-distance', lunar.moonDistanceKm ? `${lunar.moonDistanceKm} km` : '–');
     setText('lunar-note', summary);
   }
 
@@ -160,7 +167,7 @@ async function initAstral() {
     setText('signals-phase', lunar.moonPhase || '–');
     setText(
       'signals-illumination',
-      isNaN(lunar.moonIllumination) ? '–' : `${lunar.moonIllumination}%`
+      isNaN(lunar.moonIllumination) ? '–' : `${lunar.moonIllumination.toFixed(1)}%`
     );
     setText('signals-summary', summary);
   }
