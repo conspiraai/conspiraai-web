@@ -5,12 +5,7 @@
  */
 
 const IPGEO_API_KEY = '82fd924c51bf4ac48bd9c64119b1d606';
-
-// IMPORTANT: include a location so the API returns valid data
-// Lunar phase/illumination are global, location mostly affects rise/set times.
-// You can change this city if you want, it won't break the astral logic.
-const IPGEO_ENDPOINT =
-  `https://api.ipgeolocation.io/astronomy?apiKey=${IPGEO_API_KEY}&location=New York,USA`;
+const IPGEO_ENDPOINT = `https://api.ipgeolocation.io/astronomy?apiKey=${IPGEO_API_KEY}`;
 
 // Safely parse moon_illumination (handles strings like "4.3" or "4.3%")
 function parseIllumination(raw) {
@@ -29,7 +24,7 @@ async function fetchLunarData() {
 
     const moonIllumination = parseIllumination(data.moon_illumination);
 
-    // Debug log (safe to leave on for now; remove later if you want)
+    // Debug log (you can comment this out later)
     console.log('Astronomy payload:', data);
     console.log('Parsed moonIllumination:', moonIllumination);
 
@@ -40,7 +35,7 @@ async function fetchLunarData() {
       moonrise: data.moonrise,
       moonset: data.moonset,
       moonDistanceKm: data.moon_distance,
-      sunDistanceKm: data.sun_distance,
+      sunDistanceKm: data.sun_distance
     };
   } catch (err) {
     console.error('Error fetching lunar data:', err);
@@ -67,10 +62,17 @@ function computeAII(lunar) {
   const normIllum = Math.max(0, Math.min(illum, 100)) / 100;
 
   // Index 0–100
-  let score = (normIllum * 50) + (phaseWeight * 50);
+  let score = normIllum * 50 + phaseWeight * 50;
   score = Math.round(Math.max(0, Math.min(score, 100)));
 
   return score;
+}
+
+function bandFromScore(score) {
+  if (score == null || isNaN(score)) return '–';
+  if (score >= 70) return 'extreme';
+  if (score >= 36) return 'charged';
+  return 'calm';
 }
 
 function formatTime(dateObj) {
@@ -88,9 +90,7 @@ function buildSummary(lunar, score) {
   if (!lunar || score == null) return 'Unable to load astral conditions.';
 
   const phase = (lunar.moonPhase || '').toLowerCase();
-  let band = 'calm';
-  if (score >= 70) band = 'extreme';
-  else if (score >= 36) band = 'charged';
+  const band = bandFromScore(score);
 
   let hook = '';
 
@@ -104,13 +104,17 @@ function buildSummary(lunar, score) {
 
   let phaseNote = '';
   if (phase.includes('full')) {
-    phaseNote = 'Full-moon regime often aligns with emotional and liquidity extremes.';
+    phaseNote =
+      'Full-moon regime often aligns with emotional and liquidity extremes.';
   } else if (phase.includes('new')) {
-    phaseNote = 'New-moon corridors lean toward trend resets and positioning shifts.';
+    phaseNote =
+      'New-moon corridors lean toward trend resets and positioning shifts.';
   } else if (phase.includes('gibbous')) {
-    phaseNote = 'Gibbous windows often sit inside broader swing moves.';
+    phaseNote =
+      'Gibbous windows often sit inside broader swing moves.';
   } else if (phase.includes('crescent') || phase.includes('quarter')) {
-    phaseNote = 'Transitional phases between major regime shifts.';
+    phaseNote =
+      'Transitional phases between major regime shifts.';
   }
 
   return `AII: ${score} (${band}). ${hook} ${phaseNote}`;
@@ -129,11 +133,14 @@ async function initAstral() {
     setText('aii-summary', 'Unable to fetch astral data right now.');
     setText('lunar-note', 'Unable to fetch astral data right now.');
     setText('signals-summary', 'Unable to fetch astral data right now.');
+    setText('weekly-summary', 'Unable to fetch astral data right now.');
     return;
   }
 
   const score = computeAII(lunar);
   const summary = buildSummary(lunar, score);
+  const band = bandFromScore(score);
+  const timestamp = `${formatDate(lunar.date)} · ${formatTime(lunar.date)}`;
 
   // Home (index)
   if (document.body.dataset.page === 'today') {
@@ -141,10 +148,9 @@ async function initAstral() {
     setText('aii-phase', lunar.moonPhase || '–');
     setText(
       'aii-illumination',
-      isNaN(lunar.moonIllumination) ? '–' : `${lunar.moonIllumination.toFixed(1)}%`
+      isNaN(lunar.moonIllumination) ? '–' : `${lunar.moonIllumination}%`
     );
-    const ts = `${formatDate(lunar.date)} · ${formatTime(lunar.date)}`;
-    setText('aii-updated', ts);
+    setText('aii-updated', timestamp);
     setText('aii-summary', summary);
   }
 
@@ -153,11 +159,14 @@ async function initAstral() {
     setText('lunar-phase', lunar.moonPhase || '–');
     setText(
       'lunar-illumination',
-      isNaN(lunar.moonIllumination) ? '–' : `${lunar.moonIllumination.toFixed(1)}%`
+      isNaN(lunar.moonIllumination) ? '–' : `${lunar.moonIllumination}%`
     );
     setText('lunar-rise', lunar.moonrise || '–');
     setText('lunar-set', lunar.moonset || '–');
-    setText('lunar-distance', lunar.moonDistanceKm ? `${lunar.moonDistanceKm} km` : '–');
+    setText(
+      'lunar-distance',
+      lunar.moonDistanceKm ? `${lunar.moonDistanceKm} km` : '–'
+    );
     setText('lunar-note', summary);
   }
 
@@ -167,9 +176,22 @@ async function initAstral() {
     setText('signals-phase', lunar.moonPhase || '–');
     setText(
       'signals-illumination',
-      isNaN(lunar.moonIllumination) ? '–' : `${lunar.moonIllumination.toFixed(1)}%`
+      isNaN(lunar.moonIllumination) ? '–' : `${lunar.moonIllumination}%`
     );
     setText('signals-summary', summary);
+  }
+
+  // Weekly outlook page
+  if (document.body.dataset.page === 'weekly') {
+    if (score != null) setText('weekly-aii', score);
+    setText('weekly-band', band);
+    setText('weekly-phase', lunar.moonPhase || '–');
+    setText(
+      'weekly-illumination',
+      isNaN(lunar.moonIllumination) ? '–' : `${lunar.moonIllumination}%`
+    );
+    setText('weekly-range', `Week of ${formatDate(lunar.date)}`);
+    setText('weekly-summary', summary);
   }
 }
 
