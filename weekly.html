@@ -28,58 +28,121 @@
       </header>
 
       <main class="shell main">
+        <!-- WEEKLY OUTLOOK HERO -->
         <section class="section">
           <div class="section-header">
-            <h1 class="section-title">Weekly Astral Outlook</h1>
+            <h1 class="section-title">Weekly astral outlook</h1>
             <p class="section-sub">
-              A high-level read on this week’s astral regime. Use it as a context layer for your setups, not a trade signal by itself.
+              This page reads the same live Astral Intelligence Index (AII) engine and
+              turns today’s regime into a bias for the coming week. Use it as a
+              top-down lens you can pair with your own setups.
+            </p>
+          </div>
+
+          <div class="grid grid-2">
+            <!-- Current regime card -->
+            <article class="card">
+              <h3>Current AII regime</h3>
+
+              <div class="aii-inline">
+                <div class="aii-inline-value" id="weekly-aii">–</div>
+                <div class="aii-inline-meta">
+                  <div>
+                    <strong>Band:</strong>
+                    <span id="weekly-band">–</span>
+                  </div>
+                  <div>
+                    <strong>Phase:</strong>
+                    <span id="weekly-phase">–</span>
+                  </div>
+                  <div>
+                    <strong>Illumination:</strong>
+                    <span id="weekly-illumination">–</span>
+                  </div>
+                  <div>
+                    <strong>Window:</strong>
+                    <span id="weekly-range">–</span>
+                  </div>
+                </div>
+              </div>
+
+              <p class="aii-footnote" id="weekly-summary">
+                Loading weekly astral regime…
+              </p>
+            </article>
+
+            <!-- How to read the week -->
+            <article class="card">
+              <h3>How to read this week</h3>
+              <ul class="bullet-list">
+                <li>
+                  Use the band (<strong>Calm / Charged / Extreme</strong>) as a
+                  backdrop for how aggressive you want to be sizing risk.
+                </li>
+                <li>
+                  Calm weeks → better for cleanup, journaling, building lists and
+                  waiting for clean levels.
+                </li>
+                <li>
+                  Charged weeks → respect fakeouts, expansion days and liquidity
+                  grabs around key levels.
+                </li>
+                <li>
+                  Extreme weeks → assume the tape can overshoot both ways. Avoid
+                  revenge trades and over-levered punts.
+                </li>
+                <li>
+                  This is a timing overlay, not a signal engine. Your system stays
+                  in charge – this just tells you when to listen harder.
+                </li>
+              </ul>
+            </article>
+          </div>
+        </section>
+
+        <!-- LUNAR EVENT CONTEXT -->
+        <section class="section">
+          <div class="section-header">
+            <h2 class="section-title">Lunar triggers on deck</h2>
+            <p class="section-sub">
+              Conspira AI pays particular attention to full- and new-moon corridors,
+              where sentiment and positioning often reset.
             </p>
           </div>
 
           <div class="grid grid-2">
             <article class="card">
-              <h3>Current weekly read</h3>
-              <dl class="lunar-meta">
-                <div>
-                  <dt>AII (Astral Intelligence Index)</dt>
-                  <dd id="weekly-aii">–</dd>
-                </div>
-                <div>
-                  <dt>Band</dt>
-                  <dd id="weekly-band">–</dd>
-                </div>
-                <div>
-                  <dt>Dominant phase</dt>
-                  <dd id="weekly-phase">–</dd>
-                </div>
-                <div>
-                  <dt>Illumination</dt>
-                  <dd id="weekly-illumination">–</dd>
-                </div>
-                <div>
-                  <dt>Window</dt>
-                  <dd id="weekly-range">–</dd>
-                </div>
-              </dl>
-              <p class="aii-footnote" id="weekly-summary">
-                Loading weekly astral summary…
+              <h3>Closing stretch of 2025</h3>
+              <p>
+                • <strong>Dec 4 – Full Moon (Cold Moon)</strong>: historically linked
+                with higher emotional extremes and liquidity swings. Expect the AII
+                to lean more <em>charged</em> as we move into this window. 
+              </p>
+              <p>
+                • <strong>Dec 20 – New Moon</strong>: often lines up with trend
+                resets, fresh positioning and regime shifts into year-end. 
+              </p>
+              <p>
+                The live AII on this page will drift as we approach and pass through
+                these dates. Use the band and score to see whether the sky is
+                leaning more toward calm digestion or charged expansion.
               </p>
             </article>
 
             <article class="card">
-              <h3>How to frame this</h3>
+              <h3>How to plug this into your trading</h3>
               <ul class="bullet-list">
                 <li>
-                  <strong>Calm band (0–35):</strong> bias toward cleaner tape. Focus on execution and risk, not forcing trades.
+                  Align bigger risk days with higher AII readings that match your
+                  bias – or stand down when the sky and tape disagree.
                 </li>
                 <li>
-                  <strong>Charged band (36–69):</strong> more fakeouts, stop hunts and expansion days. Plan around volatility pockets.
+                  Around full / new moons, zoom out to higher-timeframe levels and
+                  avoid forcing entries into chop.
                 </li>
                 <li>
-                  <strong>Extreme band (70–100):</strong> treat key levels with extra respect; it’s easier to get caught leaning.
-                </li>
-                <li>
-                  Pair this with your own BTC / ETH / SOL levels, funding, and orderflow for a complete picture.
+                  Treat the AII as a “cosmic VIX” – an extra panel next to your
+                  BTC / ETH / SOL charts, not a replacement for your system.
                 </li>
               </ul>
             </article>
