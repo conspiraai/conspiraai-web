@@ -4,10 +4,6 @@
     <meta charset="utf-8" />
     <title>Weekly Outlook – Conspira AI</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta
-      name="description"
-      content="Conspira AI weekly astral outlook – read the current Astral Intelligence Index regime and how it biases the coming trading week."
-    />
     <link rel="stylesheet" href="colors.css" />
     <link rel="stylesheet" href="styles.css" />
   </head>
@@ -23,77 +19,67 @@
         </div>
 
         <nav class="nav">
-  <a id="nav-today" href="index.html">All Today</a>
-  <a id="nav-weekly" href="weekly.html">Weekly Outlook</a>
-  <a id="nav-lunar" href="lunar-cycle.html">Lunar Cycle</a>
-  <a id="nav-signals" href="signals.html">Signals</a>
-  <a id="nav-network" href="network.html">Network</a>
-</nav>      </header>
+          <a id="nav-today" href="index.html">All Today</a>
+          <a id="nav-weekly" href="weekly.html">Weekly Outlook</a>
+          <a id="nav-lunar" href="lunar-cycle.html">Lunar Cycle</a>
+          <a id="nav-signals" href="signals.html">Signals</a>
+          <a id="nav-network" href="network.html">Network</a>
+        </nav>
+      </header>
 
       <main class="shell main">
-        <!-- WEEKLY OUTLOOK HERO -->
         <section class="section">
           <div class="section-header">
-            <h1 class="section-title">Weekly astral outlook</h1>
+            <h1 class="section-title">Weekly Astral Outlook</h1>
             <p class="section-sub">
-              This page reads the same live Astral Intelligence Index (AII) engine
-              and translates today’s regime into a bias for the coming week.
-              It’s a top-down lens you can pair with your own setups.
+              A high-level read on this week’s astral regime. Use it as a context layer for your setups, not a trade signal by itself.
             </p>
           </div>
 
           <div class="grid grid-2">
-            <!-- LEFT: LIVE REGIME CARD -->
             <article class="card">
-              <h3>Current AII regime</h3>
-              <p class="section-sub" id="weekly-range">Week of —</p>
-
-              <div class="aii-inline">
-                <div class="aii-inline-value" id="weekly-aii">–</div>
-                <div class="aii-inline-meta">
-                  <div>
-                    <strong>Band:</strong>
-                    <span id="weekly-band">–</span>
-                  </div>
-                  <div>
-                    <strong>Phase:</strong>
-                    <span id="weekly-phase">–</span>
-                  </div>
-                  <div>
-                    <strong>Illumination:</strong>
-                    <span id="weekly-illumination">–</span>
-                  </div>
+              <h3>Current weekly read</h3>
+              <dl class="lunar-meta">
+                <div>
+                  <dt>AII (Astral Intelligence Index)</dt>
+                  <dd id="weekly-aii">–</dd>
                 </div>
-              </div>
-
+                <div>
+                  <dt>Band</dt>
+                  <dd id="weekly-band">–</dd>
+                </div>
+                <div>
+                  <dt>Dominant phase</dt>
+                  <dd id="weekly-phase">–</dd>
+                </div>
+                <div>
+                  <dt>Illumination</dt>
+                  <dd id="weekly-illumination">–</dd>
+                </div>
+                <div>
+                  <dt>Window</dt>
+                  <dd id="weekly-range">–</dd>
+                </div>
+              </dl>
               <p class="aii-footnote" id="weekly-summary">
-                Loading weekly astral context…
+                Loading weekly astral summary…
               </p>
             </article>
 
-            <!-- RIGHT: HOW TO READ THE WEEK -->
             <article class="card">
-              <h3>How to read this week</h3>
+              <h3>How to frame this</h3>
               <ul class="bullet-list">
                 <li>
-                  Use the band (Calm / Charged / Extreme) as a backdrop for how
-                  aggressive you want to be sizing risk.
+                  <strong>Calm band (0–35):</strong> bias toward cleaner tape. Focus on execution and risk, not forcing trades.
                 </li>
                 <li>
-                  Calm weeks → better for cleanup, journaling, building lists and
-                  waiting for clean levels.
+                  <strong>Charged band (36–69):</strong> more fakeouts, stop hunts and expansion days. Plan around volatility pockets.
                 </li>
                 <li>
-                  Charged weeks → respect fakeouts, expansion days and liquidity
-                  grabs around key levels.
+                  <strong>Extreme band (70–100):</strong> treat key levels with extra respect; it’s easier to get caught leaning.
                 </li>
                 <li>
-                  Extreme weeks → assume the tape can overshoot both ways. Avoid
-                  revenge trades and over-levered punts.
-                </li>
-                <li>
-                  This is a timing overlay, not a signal engine. Your system
-                  stays in charge – this just tells you when to listen harder.
+                  Pair this with your own BTC / ETH / SOL levels, funding, and orderflow for a complete picture.
                 </li>
               </ul>
             </article>
