@@ -1,0 +1,33 @@
+name: Astral Autopilot
+
+on:
+  schedule:
+    # Runs once every 3 hours – adjust if you want
+    - cron: "0 */3 * * *"
+  workflow_dispatch: {}
+
+jobs:
+  update-astral-data:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Run astral autopilot script
+        run: node scripts/astral-autopilot.mjs
+
+      - name: Commit updated astral data (if changed)
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add data/astral-latest.json
+            git commit -m "chore: update astral snapshot"
+            git push
+          fi
