@@ -1,1 +1,11 @@
-
+{
+  "timestamp": "2025-12-04T00:00:00Z",
+  "source": "bootstrap-manual",
+  "moon_phase": "WAXING_GIBBOUS",
+  "moon_illumination": 82.0,
+  "moonrise": "14:36",
+  "moonset": "04:11",
+  "moon_distance_km": 359644.8,
+  "sun_distance_km": 147325000,
+  "notes": "Initial seed data for Conspira AI. This will be replaced automatically by the astral-autopilot GitHub Action."
+}
