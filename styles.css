@@ -148,6 +148,30 @@ body {
   margin-top: 2.2rem;
 }
 
+.hero-core {
+  display: grid;
+  gap: 1rem;
+}
+
+.astral-core {
+  position: relative;
+  min-height: 240px;
+  border-radius: 1.2rem;
+  border: 2px dashed rgba(129, 140, 248, 0.45);
+  background: rgba(15, 23, 42, 0.55);
+  box-shadow: inset 0 0 32px rgba(30, 64, 175, 0.25);
+  overflow: hidden;
+}
+
+.astral-core canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
 .hero h1 {
   font-size: 2rem;
   line-height: 1.2;
