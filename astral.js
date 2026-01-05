@@ -259,11 +259,16 @@ async function initAstral() {
   const timestamp = lunar
     ? `${formatDate(lunar.date)} · ${formatTime(lunar.date)}`
     : '–';
+  if (band !== '–') {
+    document.body.dataset.aiiBand = band;
+  } else {
+    delete document.body.dataset.aiiBand;
+  }
 
   // -----------------
   // Home (index)
   // -----------------
-  if (document.body.dataset.page === 'today') {
+  if (document.body.dataset.page === 'home') {
     if (score != null) setText('aii-value', score);
     setText('aii-phase', lunar?.moonPhase || '–');
     setText(
