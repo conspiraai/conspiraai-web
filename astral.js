@@ -94,6 +94,24 @@ function bandFromScore(score) {
   return 'calm';
 }
 
+const ASTRAL_REGIME_COPY = {
+  calm: {
+    name: 'CALM',
+    posture: 'Normal conditions. Favor clean structure.',
+    rule: 'If price chops, don’t force trades.'
+  },
+  charged: {
+    name: 'CHARGED',
+    posture: 'Volatility expanding. Reduce size.',
+    rule: 'Expect fakeouts. Let levels come to you.'
+  },
+  extreme: {
+    name: 'EXTREME',
+    posture: 'High noise. Capital preservation mode.',
+    rule: 'Observation > action.'
+  }
+};
+
 function formatTime(dateObj) {
   if (!(dateObj instanceof Date)) return '–';
   return dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -149,6 +167,26 @@ function setText(id, value) {
 function setHTML(id, html) {
   const el = document.getElementById(id);
   if (el) el.innerHTML = html;
+}
+
+function updateAstralRegimeModule(band, score) {
+  const module = document.querySelector('.astral-regime');
+  if (!module) return;
+
+  const copy = ASTRAL_REGIME_COPY[band];
+  if (copy) {
+    setText('astral-regime-name', copy.name);
+    setText('astral-regime-value', score != null ? score : '–');
+    setText('astral-regime-posture', copy.posture);
+    setText('astral-regime-rule', copy.rule);
+  } else {
+    setText('astral-regime-name', '–');
+    setText('astral-regime-value', score != null ? score : '–');
+    setText('astral-regime-posture', 'Unable to load astral conditions.');
+    setText('astral-regime-rule', '–');
+  }
+
+  module.classList.add('is-visible');
 }
 
 function initAstralCoreMount() {
@@ -264,6 +302,8 @@ async function initAstral() {
   } else {
     delete document.body.dataset.aiiBand;
   }
+
+  updateAstralRegimeModule(band, score);
 
   // -----------------
   // Home (index)
