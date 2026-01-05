@@ -13,7 +13,12 @@ document.addEventListener('DOMContentLoaded', () => {
     new Set(
       revealSelectors
         .flatMap((selector) => Array.from(document.querySelectorAll(selector)))
-        .filter((el) => el && el.id !== 'bg-fx')
+        .filter(
+          (el) =>
+            el &&
+            el.id !== 'bg-fx' &&
+            !el.classList.contains('astral-regime')
+        )
     )
   );
 

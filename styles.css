@@ -257,13 +257,20 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .reveal,
   .reveal.is-visible,
-  .card {
+  .card,
+  .astral-regime,
+  .astral-regime.is-visible {
     transition: none !important;
     transform: none !important;
     filter: none !important;
+    animation: none !important;
   }
 
   .reveal {
+    opacity: 1 !important;
+  }
+
+  .astral-regime {
     opacity: 1 !important;
   }
 
@@ -399,6 +406,79 @@ body {
   margin: 0;
   font-size: 0.78rem;
   color: var(--color-text-soft);
+}
+
+/* Today's Astral Regime */
+
+.astral-regime {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  opacity: 0;
+  transform: translateY(12px);
+}
+
+.astral-regime.is-visible {
+  animation: astral-regime-fade 720ms ease forwards;
+}
+
+.astral-regime-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+
+.astral-regime-label,
+.astral-regime-aii-label,
+.astral-regime-rule-label {
+  margin: 0;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--color-text-soft);
+}
+
+.astral-regime-name {
+  font-size: 1.6rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.astral-regime-aii-value {
+  font-size: 2.4rem;
+  font-weight: 600;
+  background: linear-gradient(
+    135deg,
+    var(--color-ice-pink),
+    var(--color-ice-blue),
+    var(--color-ice-yellow)
+  );
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.astral-regime-posture {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.astral-regime-rule-text {
+  margin: 0.2rem 0 0;
+  font-size: 0.9rem;
+  color: var(--color-text-soft);
+}
+
+@keyframes astral-regime-fade {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* Inline AII for signals page */
