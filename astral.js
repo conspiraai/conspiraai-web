@@ -122,6 +122,75 @@ function formatDate(dateObj) {
   return dateObj.toLocaleDateString([], { month: 'short', day: 'numeric' });
 }
 
+const LUNAR_EVENT_COPY = {
+  full: 'Peak tension window. Watch liquidity grabs/fakeouts.',
+  new: 'Reset window. Positioning flips and trend tests.'
+};
+
+const EMPTY_LUNAR_EVENT_COPY = 'Awaiting next calendar update.';
+
+function hasTimeComponent(dateStr) {
+  return typeof dateStr === 'string' && /T\d{2}:\d{2}/.test(dateStr);
+}
+
+function formatLunarEventDate(evt) {
+  if (!evt || !evt.date) return '–';
+  const raw = evt.date;
+  const dateObj = new Date(raw);
+  if (Number.isNaN(dateObj.getTime())) return raw;
+
+  const dateText = dateObj.toLocaleDateString([], {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric'
+  });
+
+  if (hasTimeComponent(raw)) {
+    const timeText = dateObj.toLocaleTimeString([], {
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+    return `${dateText} · ${timeText}`;
+  }
+
+  return dateText;
+}
+
+function buildLunarEventLine(evt, fallbackNote) {
+  if (!evt) return EMPTY_LUNAR_EVENT_COPY;
+  const dateText = formatLunarEventDate(evt);
+  const illum =
+    evt.illumination !== undefined && evt.illumination !== null
+      ? `${evt.illumination}%`
+      : '';
+  const note = evt.note || fallbackNote || '';
+
+  return [dateText, illum, note].filter(Boolean).join(' · ');
+}
+
+function getUpcomingLunarEvents(events, now = new Date()) {
+  const normalized = (events || [])
+    .filter((evt) => evt && evt.date)
+    .map((evt) => ({ ...evt, parsedDate: new Date(evt.date) }))
+    .filter((evt) => !Number.isNaN(evt.parsedDate.getTime()))
+    .filter((evt) => evt.parsedDate >= now)
+    .sort((a, b) => a.parsedDate - b.parsedDate);
+
+  const fullEvents = normalized.filter((evt) =>
+    String(evt.type || evt.label || '').toLowerCase().includes('full')
+  );
+  const newEvents = normalized.filter((evt) =>
+    String(evt.type || evt.label || '').toLowerCase().includes('new')
+  );
+
+  return {
+    nextFull: fullEvents[0],
+    nextFull2: fullEvents[1],
+    nextNew: newEvents[0],
+    nextNew2: newEvents[1]
+  };
+}
+
 // Generate a short summary string for the index
 function buildSummary(lunar, score) {
   if (!lunar || score == null) return 'Unable to load astral conditions.';
@@ -376,45 +445,44 @@ async function initAstral() {
   // -----------------
   // Lunar calendar (full cycle) – uses lunar-data.json
   // -----------------
-  if (document.body.dataset.page === 'lunar') {
+  if (
+    document.body.dataset.page === 'lunar' ||
+    document.body.dataset.page === 'weekly'
+  ) {
     const calendar = await fetchLunarCalendar();
 
     if (!calendar || !Array.isArray(calendar.upcomingEvents)) {
       setText(
         'lunar-events-status',
-        'Lunar calendar not loaded yet. Autopilot will populate upcoming full / new moon windows.'
+        'Unable to load lunar calendar right now.'
       );
-      setHTML('lunar-events-list', '');
+      setText('weekly-lunar-status', 'Unable to load lunar calendar right now.');
+      setText('next-full', EMPTY_LUNAR_EVENT_COPY);
+      setText('next-full-2', EMPTY_LUNAR_EVENT_COPY);
+      setText('next-new', EMPTY_LUNAR_EVENT_COPY);
+      setText('next-new-2', EMPTY_LUNAR_EVENT_COPY);
       return;
     }
 
-    if (calendar.upcomingEvents.length === 0) {
+    const { nextFull, nextFull2, nextNew, nextNew2 } = getUpcomingLunarEvents(
+      calendar.upcomingEvents
+    );
+
+    if (!nextFull && !nextNew) {
       setText(
         'lunar-events-status',
-        'No upcoming events listed yet. Waiting for the next Astral Autopilot run.'
+        'No upcoming lunar windows listed yet. Waiting for the next Astral Autopilot run.'
       );
-      setHTML('lunar-events-list', '');
+      setText(
+        'weekly-lunar-status',
+        'No upcoming lunar windows listed yet. Waiting for the next Astral Autopilot run.'
+      );
+      setText('next-full', EMPTY_LUNAR_EVENT_COPY);
+      setText('next-full-2', EMPTY_LUNAR_EVENT_COPY);
+      setText('next-new', EMPTY_LUNAR_EVENT_COPY);
+      setText('next-new-2', EMPTY_LUNAR_EVENT_COPY);
       return;
     }
-
-    // Build list items for upcoming full / new / quarter moons
-    const items = calendar.upcomingEvents
-      .slice(0, 6) // limit to 6 events so it doesn’t get crazy long
-      .map((evt) => {
-        const dateLabel = evt.date || '';
-        const typeLabel = (evt.type || '').replace('_', ' ');
-        const label = evt.label || typeLabel;
-        const note = evt.note || '';
-        const illum =
-          evt.illumination !== undefined && evt.illumination !== null
-            ? ` · ${evt.illumination}%`
-            : '';
-
-        return `<li><strong>${label}</strong> — ${dateLabel}${illum}${
-          note ? ` · ${note}` : ''
-        }</li>`;
-      })
-      .join('');
 
     setText(
       'lunar-events-status',
@@ -423,7 +491,23 @@ async function initAstral() {
         : 'Upcoming high-signal lunar windows.'
     );
 
-    setHTML('lunar-events-list', items);
+    setText(
+      'weekly-lunar-status',
+      calendar.lastUpdated
+        ? `Upcoming high-signal lunar windows (data updated ${calendar.lastUpdated}).`
+        : 'Upcoming high-signal lunar windows.'
+    );
+
+    setText(
+      'next-full',
+      buildLunarEventLine(nextFull, LUNAR_EVENT_COPY.full)
+    );
+    setText(
+      'next-full-2',
+      buildLunarEventLine(nextFull2, LUNAR_EVENT_COPY.full)
+    );
+    setText('next-new', buildLunarEventLine(nextNew, LUNAR_EVENT_COPY.new));
+    setText('next-new-2', buildLunarEventLine(nextNew2, LUNAR_EVENT_COPY.new));
   }
 }
 
