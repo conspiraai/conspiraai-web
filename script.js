@@ -7,7 +7,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const page = document.body.dataset.page;
   if (!page) return;
 
-  const linkId = `nav-${page}`;
+  const navKey = page === 'home' ? 'today' : page;
+  const linkId = `nav-${navKey}`;
   const activeLink = document.getElementById(linkId);
   if (activeLink) {
     activeLink.classList.add('nav-active');
