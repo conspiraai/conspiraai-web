@@ -58,34 +58,41 @@ const pages = [
   }
 ];
 
-const browser = await chromium.launch();
-const page = await browser.newPage();
+let browser;
+let page;
 
-for (const entry of pages) {
-  const consoleErrors = [];
-  page.removeAllListeners('console');
-  page.removeAllListeners('pageerror');
+try {
+  browser = await chromium.launch();
+  page = await browser.newPage();
 
-  page.on('console', (msg) => {
-    if (msg.type() === 'error') {
-      consoleErrors.push(msg.text());
+  for (const entry of pages) {
+    const consoleErrors = [];
+    page.removeAllListeners('console');
+    page.removeAllListeners('pageerror');
+
+    page.on('console', (msg) => {
+      if (msg.type() === 'error') {
+        consoleErrors.push(msg.text());
+      }
+    });
+
+    page.on('pageerror', (err) => {
+      consoleErrors.push(err.message);
+    });
+
+    await page.goto(`${baseUrl}${entry.path}`, { waitUntil: 'networkidle' });
+
+    for (const selector of entry.selectors) {
+      await page.waitForSelector(selector, { timeout: 5000 });
     }
-  });
 
-  page.on('pageerror', (err) => {
-    consoleErrors.push(err.message);
-  });
-
-  await page.goto(`${baseUrl}${entry.path}`, { waitUntil: 'networkidle' });
-
-  for (const selector of entry.selectors) {
-    await page.waitForSelector(selector, { timeout: 5000 });
+    if (consoleErrors.length) {
+      throw new Error(`Console errors on ${entry.path}: ${consoleErrors.join('; ')}`);
+    }
   }
-
-  if (consoleErrors.length) {
-    throw new Error(`Console errors on ${entry.path}: ${consoleErrors.join('; ')}`);
+} finally {
+  if (browser) {
+    await browser.close();
   }
+  server.close();
 }
-
-await browser.close();
-server.close();
