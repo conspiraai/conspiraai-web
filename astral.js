@@ -52,6 +52,9 @@ async function fetchLunarCalendar() {
     const res = await fetch(`data/lunar-data.json?ts=${Date.now()}`);
     if (!res.ok) throw new Error('Non-200 response');
     const data = await res.json();
+    if (!data || !Array.isArray(data.upcomingEvents)) {
+      return null;
+    }
     lunarCalendarCache = data;
     return data;
   } catch (err) {
@@ -169,11 +172,25 @@ function hasTimeComponent(dateStr) {
   return typeof dateStr === 'string' && /T\d{2}:\d{2}/.test(dateStr);
 }
 
+function safeParseDate(value) {
+  if (!value) return null;
+  const parsed = new Date(value);
+  return Number.isNaN(parsed.getTime()) ? null : parsed;
+}
+
+function getLocalDateKey(dateObj) {
+  if (!(dateObj instanceof Date) || Number.isNaN(dateObj.getTime())) return null;
+  const year = dateObj.getFullYear();
+  const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+  const day = String(dateObj.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
 function formatLunarEventDate(evt) {
   if (!evt || !evt.date) return '–';
   const raw = evt.date;
-  const dateObj = new Date(raw);
-  if (Number.isNaN(dateObj.getTime())) return raw;
+  const dateObj = safeParseDate(raw);
+  if (!dateObj) return raw;
 
   const dateText = dateObj.toLocaleDateString([], {
     month: 'short',
@@ -216,8 +233,8 @@ function normalizeEventLabel(rawLabel) {
 function getNextUpcomingEvent(events, now = new Date()) {
   const upcoming = (events || [])
     .filter((evt) => evt && evt.date)
-    .map((evt) => ({ ...evt, parsedDate: new Date(evt.date) }))
-    .filter((evt) => !Number.isNaN(evt.parsedDate.getTime()))
+    .map((evt) => ({ ...evt, parsedDate: safeParseDate(evt.date) }))
+    .filter((evt) => evt.parsedDate)
     .filter((evt) => evt.parsedDate >= now)
     .sort((a, b) => a.parsedDate - b.parsedDate);
   return upcoming[0] || null;
@@ -409,32 +426,42 @@ function getBoundaryKey(phaseLabel) {
 
 function isKeyEventWithinRange(nextEvent, now, rangeHours) {
   if (!nextEvent?.date) return false;
-  const eventDate = new Date(nextEvent.date);
-  if (Number.isNaN(eventDate.getTime())) return false;
+  const eventDate = safeParseDate(nextEvent.date);
+  if (!eventDate) return false;
   const diffHours = (eventDate - now) / (1000 * 60 * 60);
   return diffHours >= 0 && diffHours <= rangeHours;
 }
 
 function buildDailyShiftMessage({ lunar, nextEvent, now = new Date() } = {}) {
+  const localDateKey = getLocalDateKey(now);
   const boundaryKey = getBoundaryKey(lunar?.moonPhase);
   const inRange = isKeyEventWithinRange(
     nextEvent,
     now,
     DAILY_SHIFT_EVENT_RANGE_HOURS
   );
+  const eventDate = inRange ? safeParseDate(nextEvent?.date) : null;
+  const eventKey = eventDate ? eventDate.toISOString() : null;
+
+  if (!localDateKey) {
+    // Defensive: missing date context falls back to steady messaging.
+    return { message: DAILY_SHIFT_FALLBACK, stateKey: 'steady' };
+  }
+
   // Daily Shift is a contextual state indicator, not a signal.
-  const stateKey = inRange
-    ? `event:${nextEvent?.date || 'unknown'}`
+  const stateKey = inRange && eventKey
+    ? `day:${localDateKey}|event:${eventKey}`
     : boundaryKey
-      ? `boundary:${boundaryKey}`
-      : 'steady';
+      ? `day:${localDateKey}|boundary:${boundaryKey}`
+      : `day:${localDateKey}|steady`;
   const variants =
     inRange || boundaryKey
       ? DAILY_SHIFT_CHANGE_VARIANTS
       : DAILY_SHIFT_STEADY_VARIANTS;
+  const message = pickVariant(variants, stateKey) || DAILY_SHIFT_FALLBACK;
 
   return {
-    message: pickVariant(variants, stateKey),
+    message,
     stateKey
   };
 }
@@ -450,6 +477,9 @@ function renderDailyShift({ lunar, calendar } = {}) {
     nextEvent,
     now
   });
+  const localDateKey = getLocalDateKey(now);
+  const resolvedMessage = message || DAILY_SHIFT_FALLBACK;
+  const resolvedKey = stateKey || (localDateKey ? `day:${localDateKey}|steady` : 'steady');
 
   let cachedKey = null;
   let cachedMessage = null;
@@ -461,16 +491,16 @@ function renderDailyShift({ lunar, calendar } = {}) {
     cachedMessage = null;
   }
 
-  if (cachedKey === stateKey && cachedMessage) {
+  if (cachedKey === resolvedKey && cachedMessage) {
     el.textContent = cachedMessage;
     return;
   }
 
-  el.textContent = message;
+  el.textContent = resolvedMessage;
 
   try {
-    localStorage.setItem('dailyShiftKey', stateKey);
-    localStorage.setItem('dailyShiftMessage', message);
+    localStorage.setItem('dailyShiftKey', resolvedKey);
+    localStorage.setItem('dailyShiftMessage', resolvedMessage);
   } catch (err) {
     // fail silently
   }
