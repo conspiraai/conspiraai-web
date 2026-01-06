@@ -127,22 +127,28 @@ body {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 0.2rem;
+  gap: 0.18rem;
   max-width: 240px;
-  font-size: 0.75rem;
+  font-size: 0.7rem;
 }
 
 .daily-shift-label {
-  font-size: 0.6rem;
+  font-size: 0.55rem;
   text-transform: uppercase;
   letter-spacing: 0.22em;
-  color: var(--color-text-soft);
+  color: rgba(226, 232, 240, 0.6);
 }
 
 .daily-shift-text {
   text-align: right;
-  color: var(--color-text);
+  color: rgba(226, 232, 240, 0.7);
   line-height: 1.35;
+}
+
+.daily-shift-meta {
+  font-size: 0.58rem;
+  color: rgba(226, 232, 240, 0.5);
+  text-align: right;
 }
 
 .nav-underline {
@@ -1123,6 +1129,10 @@ body {
   }
 
   .daily-shift-text {
+    text-align: left;
+  }
+
+  .daily-shift-meta {
     text-align: left;
   }
 
