@@ -79,6 +79,38 @@
                 <p class="lunar-3d-status" id="market-status">Loading market data…</p>
               </div>
 
+              <div class="reflection-panel" aria-live="polite">
+                <div class="reflection-header">
+                  <h4 class="reflection-title">Daily Reflection</h4>
+                </div>
+                <p class="reflection-question" id="reflection-question">–</p>
+                <p class="reflection-helper">A quick bias check — not trade advice.</p>
+                <div class="reflection-actions">
+                  <button
+                    id="reflection-up"
+                    class="reflection-button"
+                    type="button"
+                    aria-pressed="false"
+                  >
+                    👍 Helped
+                  </button>
+                  <button
+                    id="reflection-down"
+                    class="reflection-button reflection-button-muted"
+                    type="button"
+                    aria-pressed="false"
+                  >
+                    👎 Not today
+                  </button>
+                </div>
+                <div class="reflection-footer">
+                  <span class="reflection-streak" id="reflection-streak">Streak: 0 days</span>
+                  <button id="reflection-swap" class="reflection-link" type="button">
+                    Change question
+                  </button>
+                </div>
+              </div>
+
               <dl class="lunar-3d-meta">
                 <div>
                   <dt>Selected timestamp</dt>
@@ -122,6 +154,7 @@
     <script src="script.js" defer></script>
     <script src="bg-fx.js" defer></script>
     <script src="ui-motion.js" defer></script>
+    <script src="ui-reflection.js" defer></script>
     <script type="module" src="js/lunar-3d.js"></script>
   </body>
 </html>

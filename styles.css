@@ -258,6 +258,7 @@ body {
   .reveal,
   .reveal.is-visible,
   .card,
+  .reflection-button,
   .astral-regime,
   .astral-regime.is-visible {
     transition: none !important;
@@ -819,6 +820,103 @@ body {
   display: grid;
   gap: 0.6rem;
   margin-bottom: 1.2rem;
+}
+
+.reflection-panel {
+  margin-bottom: 1.2rem;
+  padding: 0.9rem;
+  border-radius: 0.9rem;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  background: rgba(15, 23, 42, 0.55);
+  display: grid;
+  gap: 0.55rem;
+}
+
+.reflection-title {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.reflection-question {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #f8fafc;
+}
+
+.reflection-helper {
+  margin: 0;
+  font-size: 0.78rem;
+  color: var(--color-text-soft);
+}
+
+.reflection-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.reflection-button {
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.5);
+  background: rgba(15, 23, 42, 0.8);
+  color: #f8fafc;
+  padding: 0.35rem 0.8rem;
+  font-size: 0.78rem;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.reflection-button:hover,
+.reflection-button:focus-visible {
+  border-color: rgba(125, 211, 252, 0.7);
+  box-shadow: 0 0 16px rgba(56, 189, 248, 0.2);
+}
+
+.reflection-button.is-selected {
+  border-color: rgba(125, 211, 252, 0.9);
+  box-shadow: 0 0 18px rgba(56, 189, 248, 0.35);
+}
+
+.reflection-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.reflection-button-muted {
+  color: rgba(248, 250, 252, 0.75);
+}
+
+.reflection-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  font-size: 0.78rem;
+}
+
+.reflection-streak {
+  color: var(--color-ice-yellow);
+}
+
+.reflection-link {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--color-ice-blue);
+  font-size: 0.78rem;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.reflection-link:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.reflection-link:hover,
+.reflection-link:focus-visible {
+  color: #e0f2fe;
 }
 
 .lunar-3d-label {
