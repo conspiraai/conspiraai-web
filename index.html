@@ -84,34 +84,71 @@
 
         <section class="section daily-stance" aria-live="polite">
           <div class="section-header">
-            <h2 class="section-title">Daily Market Stance</h2>
+            <h2 class="section-title">Today’s Risk Weather</h2>
             <p class="section-sub">
-              Should I participate today? A quick posture check based on the live AII band.
+              AII summarizes the current volatility environment.<br />
+              Use as context — not a prediction.
             </p>
           </div>
 
           <article class="card daily-stance-card" id="daily-stance">
             <div class="daily-stance-header">
-              <p class="daily-stance-kicker">Return loop</p>
+              <p class="daily-stance-kicker">Volatility report</p>
               <span class="pill daily-stance-pill" id="stance-label">—</span>
             </div>
             <p class="daily-stance-summary" id="stance-summary">
-              Loading today’s stance…
+              Loading today’s risk weather…
             </p>
-            <p class="daily-stance-check">Quick check: Am I reacting or responding?</p>
+            <p class="daily-stance-check">Quick check: How steady is my attention today?</p>
             <div class="daily-stance-badges">
               <span class="badge" id="stance-badge-aii">AII: —</span>
+              <span class="badge" id="stance-badge-regime">Regime: —</span>
               <span class="badge" id="stance-badge-moon">Moon: —</span>
-              <span class="badge" id="stance-badge-next">Next: —</span>
             </div>
           </article>
+        </section>
+
+        <section class="section bias-checkin" aria-live="polite">
+          <div class="section-header">
+            <h2 class="section-title">Daily Bias Check-In</h2>
+            <p class="section-sub">
+              A quick self-reflection loop to compare your bias with today’s regime.
+            </p>
+          </div>
+
+          <article class="card bias-card">
+            <div class="bias-options" role="group" aria-label="Select your bias">
+              <button class="bias-button" type="button" data-bias="Bullish">Bullish</button>
+              <button class="bias-button" type="button" data-bias="Neutral">Neutral</button>
+              <button class="bias-button" type="button" data-bias="Bearish">Bearish</button>
+            </div>
+            <label class="bias-note-label" for="bias-note">Optional note</label>
+            <textarea
+              class="bias-note"
+              id="bias-note"
+              rows="3"
+              placeholder="What’s driving your bias?"
+            ></textarea>
+            <div class="bias-actions">
+              <button class="bias-save" type="button" id="bias-save">Save check-in</button>
+              <span class="bias-status" id="bias-status" role="status"></span>
+            </div>
+          </article>
+
+          <div class="bias-patterns">
+            <h3>Your Patterns (last 14 days)</h3>
+            <ul class="bias-patterns-list" id="bias-patterns-list">
+              <li>No check-ins yet.</li>
+            </ul>
+            <p class="bias-disclaimer">Patterns reflect your inputs, not market outcomes.</p>
+          </div>
         </section>
 
         <section class="section">
           <div class="section-header">
             <h2 class="section-title">Today’s Astral Regime</h2>
             <p class="section-sub">
-              A single daily risk posture pulled from the live AII band.
+              A single regime label pulled from the live AII band.
             </p>
           </div>
 
@@ -130,7 +167,7 @@
               Loading today’s astral regime…
             </p>
             <div class="astral-regime-rule">
-              <p class="astral-regime-rule-label">Behavioral rule</p>
+              <p class="astral-regime-rule-label">Observation cue</p>
               <p class="astral-regime-rule-text" id="astral-regime-rule">–</p>
             </div>
           </article>
@@ -233,6 +270,12 @@
             </a>
           </div>
         </section>
+        <section class="section next-shift" aria-live="polite">
+          <div class="section-header">
+            <h2 class="section-title">Next Shift</h2>
+          </div>
+          <p class="next-shift-detail" id="next-shift-detail">Next key lunar marker: —</p>
+        </section>
       </main>
 
       <footer class="shell site-footer">
@@ -242,6 +285,7 @@
 
     <script src="astral.js" defer></script>
     <script src="script.js" defer></script>
+    <script src="ui-journal.js" defer></script>
     <script src="bg-fx.js" defer></script>
     <script src="ui-motion.js" defer></script>
   </body>

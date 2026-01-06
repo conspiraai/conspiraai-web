@@ -491,6 +491,113 @@ body {
   background: rgba(15, 23, 42, 0.5);
 }
 
+/* Daily Bias Check-In */
+
+.bias-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.bias-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.bias-button {
+  border: 1px solid rgba(148, 163, 184, 0.4);
+  background: rgba(15, 23, 42, 0.6);
+  color: var(--color-text);
+  border-radius: 999px;
+  padding: 0.45rem 1.2rem;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  cursor: pointer;
+  transition: all 180ms ease;
+}
+
+.bias-button:hover,
+.bias-button:focus-visible {
+  border-color: rgba(59, 130, 246, 0.65);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+.bias-button.is-selected {
+  color: #bbf7d0;
+  border-color: rgba(34, 197, 94, 0.6);
+  background: rgba(22, 163, 74, 0.2);
+}
+
+.bias-note-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: var(--color-text-soft);
+}
+
+.bias-note {
+  border-radius: 0.9rem;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  background: rgba(15, 23, 42, 0.55);
+  color: var(--color-text);
+  padding: 0.8rem 0.9rem;
+  font-size: 0.9rem;
+  resize: vertical;
+}
+
+.bias-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.bias-save {
+  border: 1px solid rgba(59, 130, 246, 0.65);
+  background: rgba(59, 130, 246, 0.2);
+  color: #e0f2fe;
+  border-radius: 999px;
+  padding: 0.5rem 1.6rem;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  cursor: pointer;
+}
+
+.bias-save:hover,
+.bias-save:focus-visible {
+  border-color: rgba(59, 130, 246, 0.9);
+}
+
+.bias-status {
+  font-size: 0.8rem;
+  color: var(--color-text-soft);
+}
+
+.bias-patterns {
+  margin-top: 1rem;
+}
+
+.bias-patterns h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1rem;
+}
+
+.bias-patterns-list {
+  list-style: disc;
+  padding-left: 1.1rem;
+  margin: 0 0 0.6rem;
+  color: var(--color-text-soft);
+  font-size: 0.85rem;
+}
+
+.bias-disclaimer {
+  margin: 0;
+  font-size: 0.78rem;
+  color: var(--color-text-soft);
+}
+
 /* Today's Astral Regime */
 
 .astral-regime {
@@ -550,6 +657,14 @@ body {
 .astral-regime-rule-text {
   margin: 0.2rem 0 0;
   font-size: 0.9rem;
+  color: var(--color-text-soft);
+}
+
+/* Next Shift */
+
+.next-shift-detail {
+  margin: 0;
+  font-size: 0.85rem;
   color: var(--color-text-soft);
 }
 
