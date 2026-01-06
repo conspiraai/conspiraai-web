@@ -28,6 +28,8 @@ const state = {
   lastIllumination: 50
 };
 
+const LUNAR_CYCLE_DAYS = 29.53;
+const ORBIT_RADIUS = 3.2;
 const FALLBACK_STATUS = '3D unavailable — showing simplified view.';
 const MARKET_STATUS_LOADING = 'Loading market data…';
 const MARKET_STATUS_LOADED = 'Market data loaded ✓';
@@ -72,7 +74,7 @@ function clamp(value, min, max) {
 }
 
 function cycleMs() {
-  return 29.53 * 24 * 60 * 60 * 1000;
+  return LUNAR_CYCLE_DAYS * 24 * 60 * 60 * 1000;
 }
 
 function moonPhaseName(phaseFraction) {
@@ -108,8 +110,7 @@ function updateInfoPanel({ date, phaseName, illumination, price }) {
 
 function updateMoonPosition(angle) {
   if (!moon) return;
-  const orbitRadius = 3.2;
-  moon.position.set(Math.cos(angle) * orbitRadius, 0, Math.sin(angle) * orbitRadius);
+  moon.position.set(Math.cos(angle) * ORBIT_RADIUS, 0, Math.sin(angle) * ORBIT_RADIUS);
 }
 
 function updateCursor(index) {
@@ -223,16 +224,26 @@ function normalizeMarketData(raw) {
 
 function buildMarketPoints(data) {
   if (!data.length || !THREE) return [];
-  const prices = data.map((entry) => entry.price ?? 0);
-  const min = Math.min(...prices);
-  const max = Math.max(...prices);
-  const range = max - min || 1;
-
+  const validPrices = data
+    .map((entry) => entry.price)
+    .filter((price) => price != null && !Number.isNaN(price));
   const chartWidth = 6.4;
   const chartHeight = 1.6;
+  if (!validPrices.length) {
+    return data.map((entry, index) => {
+      const x = (index / (data.length - 1 || 1)) * chartWidth - chartWidth / 2;
+      return new THREE.Vector3(x, 0, 0);
+    });
+  }
+
+  const min = Math.min(...validPrices);
+  const max = Math.max(...validPrices);
+  const range = max - min || 1;
+  const mid = (min + max) / 2;
 
   return data.map((entry, index) => {
-    const normalized = ((entry.price ?? min) - min) / range;
+    const price = entry.price ?? mid;
+    const normalized = (price - min) / range;
     const x = (index / (data.length - 1 || 1)) * chartWidth - chartWidth / 2;
     const y = normalized * chartHeight - chartHeight / 2;
     return new THREE.Vector3(x, y, 0);
@@ -447,9 +458,13 @@ async function loadOrbitControls() {
   if (!source) return null;
 
   const rewritten = source.replace(/from ['\"]three['\"]/g, `from '${threeModuleUrl}'`);
+  if (rewritten === source || !rewritten.includes(threeModuleUrl)) {
+    console.warn('OrbitControls import rewrite failed; falling back to 2D canvas.');
+    return { OrbitControls: null, rewriteFailed: true };
+  }
   const controlModuleUrl = createModuleUrl(rewritten);
   const module = await import(controlModuleUrl);
-  return module?.OrbitControls ?? null;
+  return { OrbitControls: module?.OrbitControls ?? null, rewriteFailed: false };
 }
 
 function initScene() {
@@ -517,13 +532,12 @@ function initScene() {
   );
   scene.add(moon);
 
-  const orbitRadius = 3.2;
   const orbitGeometry = new THREE.BufferGeometry();
   const orbitSegments = 96;
   const orbitVertices = [];
   for (let i = 0; i <= orbitSegments; i += 1) {
     const angle = (i / orbitSegments) * Math.PI * 2;
-    orbitVertices.push(Math.cos(angle) * orbitRadius, 0, Math.sin(angle) * orbitRadius);
+    orbitVertices.push(Math.cos(angle) * ORBIT_RADIUS, 0, Math.sin(angle) * ORBIT_RADIUS);
   }
   orbitGeometry.setAttribute('position', new THREE.Float32BufferAttribute(orbitVertices, 3));
   const orbitLine = new THREE.Line(
@@ -550,7 +564,12 @@ async function initThreeScene() {
     return;
   }
 
-  OrbitControls = await loadOrbitControls();
+  const controlsResult = await loadOrbitControls();
+  if (controlsResult?.rewriteFailed) {
+    updateSceneStatus(FALLBACK_STATUS);
+    return;
+  }
+  OrbitControls = controlsResult?.OrbitControls ?? null;
   initScene();
 }
 
