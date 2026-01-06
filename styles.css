@@ -408,6 +408,89 @@ body {
   color: var(--color-text-soft);
 }
 
+/* Daily Market Stance */
+
+.daily-stance-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.daily-stance-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.daily-stance-kicker {
+  margin: 0;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--color-text-soft);
+}
+
+.daily-stance-pill {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.35rem 0.85rem;
+  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  border-color: rgba(148, 163, 184, 0.5);
+  background: rgba(148, 163, 184, 0.15);
+}
+
+.daily-stance-pill.is-calm {
+  color: #bbf7d0;
+  border-color: rgba(34, 197, 94, 0.6);
+  background: rgba(22, 163, 74, 0.18);
+}
+
+.daily-stance-pill.is-charged {
+  color: #fde68a;
+  border-color: rgba(250, 204, 21, 0.6);
+  background: rgba(202, 138, 4, 0.2);
+}
+
+.daily-stance-pill.is-extreme {
+  color: #fecdd3;
+  border-color: rgba(244, 63, 94, 0.6);
+  background: rgba(225, 29, 72, 0.2);
+}
+
+.daily-stance-summary {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.daily-stance-check {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--color-text-soft);
+}
+
+.daily-stance-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  color: var(--color-text-soft);
+  background: rgba(15, 23, 42, 0.5);
+}
+
 /* Today's Astral Regime */
 
 .astral-regime {
