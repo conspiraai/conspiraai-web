@@ -779,6 +779,20 @@ body {
   padding-bottom: 1.75rem;
 }
 
+.site-footer p {
+  margin: 0;
+}
+
+.site-footer p + p {
+  margin-top: 0.35rem;
+}
+
+.footer-disclaimer {
+  margin-top: 0.45rem;
+  max-width: 520px;
+  line-height: 1.5;
+}
+
 /* Responsive */
 
 @media (max-width: 840px) {

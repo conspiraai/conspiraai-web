@@ -100,18 +100,18 @@ function bandFromScore(score) {
 const ASTRAL_REGIME_COPY = {
   calm: {
     name: 'CALM',
-    posture: 'Calmer volatility with steadier pacing.',
-    rule: 'Ranges tend to stay tighter and more orderly.'
+    posture: 'Lower background volatility with steadier pacing.',
+    rule: 'Historically associated with tighter ranges and smoother rotations.'
   },
   charged: {
     name: 'CHARGED',
     posture: 'Volatility expanding with faster swings.',
-    rule: 'Momentum bursts and reversals show up more often.'
+    rule: 'Historically associated with quicker shifts and wider ranges.'
   },
   extreme: {
     name: 'EXTREME',
     posture: 'High noise with sharp, uneven bursts.',
-    rule: 'Directionality can be less stable across sessions.'
+    rule: 'Historically associated with unstable directionality across sessions.'
   }
 };
 
@@ -119,17 +119,17 @@ const DAILY_WEATHER_COPY = {
   calm: {
     label: 'Quiet',
     summary:
-      'Background volatility is subdued with cleaner price rhythm.'
+      'Current conditions indicate subdued background volatility with steadier pacing.'
   },
   charged: {
     label: 'Active',
     summary:
-      'Energy is building, with quicker swings and more sudden shifts.'
+      'Current conditions indicate elevated activity with quicker swings and sentiment shifts.'
   },
   extreme: {
     label: 'Turbulent',
     summary:
-      'Conditions are jumpy, with sharp moves and heavier noise.'
+      'Current conditions indicate heavier noise with sharp, uneven moves.'
   },
   unknown: {
     label: '—',
@@ -154,8 +154,8 @@ function formatShortDate(dateObj) {
 }
 
 const LUNAR_EVENT_COPY = {
-  full: 'Peak tension window. Watch liquidity grabs/fakeouts.',
-  new: 'Reset window. Positioning flips and trend tests.'
+  full: 'Peak tension window. Historically associated with liquidity swings.',
+  new: 'Reset window. Historically associated with positioning shifts.'
 };
 
 const EMPTY_LUNAR_EVENT_COPY = 'Awaiting next calendar update.';
@@ -251,23 +251,23 @@ function buildSummary(lunar, score) {
   let hook = '';
 
   if (band === 'extreme') {
-    hook = 'Expect unstable or sharp moves around key levels.';
+    hook = 'Historical context suggests wider ranges and faster sentiment shifts.';
   } else if (band === 'charged') {
-    hook = 'Watch for accelerations, fakeouts and expansion days.';
+    hook = 'Historical context suggests quicker swings and expansion phases.';
   } else {
-    hook = 'Tape is more likely to behave “normally”, but risk still applies.';
+    hook = 'Historical context suggests steadier pacing and tighter ranges.';
   }
 
   let phaseNote = '';
   if (phase.includes('full')) {
     phaseNote =
-      'Full-moon regime often aligns with emotional and liquidity extremes.';
+      'Full-moon regimes have historically coincided with heightened sensitivity.';
   } else if (phase.includes('new')) {
     phaseNote =
-      'New-moon corridors lean toward trend resets and positioning shifts.';
+      'New-moon corridors have historically coincided with resets and repositioning.';
   } else if (phase.includes('gibbous')) {
     phaseNote =
-      'Gibbous windows often sit inside broader swing moves.';
+      'Gibbous windows often sit inside broader swing cycles.';
   } else if (phase.includes('crescent') || phase.includes('quarter')) {
     phaseNote =
       'Transitional phases between major regime shifts.';
@@ -638,15 +638,15 @@ async function initAstral() {
     setText(
       'lunar-events-status',
       calendar.lastUpdated
-        ? `Upcoming high-signal lunar windows (data updated ${calendar.lastUpdated}).`
-        : 'Upcoming high-signal lunar windows.'
+        ? `Upcoming lunar windows (data updated ${calendar.lastUpdated}).`
+        : 'Upcoming lunar windows.'
     );
 
     setText(
       'weekly-lunar-status',
       calendar.lastUpdated
-        ? `Upcoming high-signal lunar windows (data updated ${calendar.lastUpdated}).`
-        : 'Upcoming high-signal lunar windows.'
+        ? `Upcoming lunar windows (data updated ${calendar.lastUpdated}).`
+        : 'Upcoming lunar windows.'
     );
 
     setText(

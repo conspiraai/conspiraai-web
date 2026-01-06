@@ -59,6 +59,12 @@ function updatePatterns(entries) {
 
   const biases = ['Bullish', 'Neutral', 'Bearish'];
   const regimes = ['calm', 'charged', 'extreme'];
+  const weatherLabels = {
+    calm: 'quiet',
+    charged: 'active',
+    extreme: 'turbulent',
+    unknown: 'unclear'
+  };
 
   const total = recent.length;
   const overallCounts = biases.reduce((acc, bias) => {
@@ -66,35 +72,87 @@ function updatePatterns(entries) {
     return acc;
   }, {});
 
-  const overallLines = biases.map((bias) => {
-    const pct = Math.round((overallCounts[bias] / total) * 100);
-    return `<li>${bias} overall: ${pct}%</li>`;
-  });
-
-  const regimeLines = [];
-  regimes.forEach((regime) => {
-    const regimeEntries = recent.filter((entry) => entry.band === regime);
-    if (regimeEntries.length === 0) return;
-    biases.forEach((bias) => {
-      const count = regimeEntries.filter((entry) => entry.bias === bias).length;
-      if (count === 0) return;
-      const pct = Math.round((count / regimeEntries.length) * 100);
-      regimeLines.push(
-        `<li>${bias} during ${titleCase(regime)}: ${pct}%</li>`
-      );
-    });
-  });
-
   const mostCommonBias = biases.reduce(
     (prev, bias) => (overallCounts[bias] > overallCounts[prev] ? bias : prev),
     biases[0]
   );
 
   const lines = [
-    ...overallLines,
-    ...regimeLines,
-    `<li>Most common bias: ${mostCommonBias}</li>`
+    `<li>Last 14 days: ${total} check-in${total === 1 ? '' : 's'}.</li>`,
+    `<li>Your most frequent bias has been ${mostCommonBias.toLowerCase()}.</li>`
   ];
+
+  const regimeBuckets = regimes.map((regime) => ({
+    regime,
+    entries: recent.filter((entry) => entry.band === regime)
+  }));
+
+  const mostActiveRegime = regimeBuckets.reduce((prev, current) =>
+    current.entries.length > prev.entries.length ? current : prev
+  );
+
+  if (mostActiveRegime.entries.length >= 2) {
+    const regimeBiasCounts = biases.reduce((acc, bias) => {
+      acc[bias] = mostActiveRegime.entries.filter(
+        (entry) => entry.bias === bias
+      ).length;
+      return acc;
+    }, {});
+    const topRegimeBias = biases.reduce(
+      (prev, bias) =>
+        regimeBiasCounts[bias] > regimeBiasCounts[prev] ? bias : prev,
+      biases[0]
+    );
+    lines.push(
+      `<li>You tend to feel ${topRegimeBias.toLowerCase()} during ${weatherLabels[mostActiveRegime.regime]} conditions.</li>`
+    );
+  }
+
+  const turbulentEntries = recent.filter((entry) => entry.band === 'extreme');
+  if (turbulentEntries.length >= 2) {
+    const turbulentBiasCounts = biases.reduce((acc, bias) => {
+      acc[bias] = turbulentEntries.filter((entry) => entry.bias === bias).length;
+      return acc;
+    }, {});
+    const turbulentBias = biases.reduce(
+      (prev, bias) =>
+        turbulentBiasCounts[bias] > turbulentBiasCounts[prev] ? bias : prev,
+      biases[0]
+    );
+    if (turbulentBias !== 'Neutral') {
+      lines.push(
+        `<li>You tend to feel ${turbulentBias.toLowerCase()} during turbulent conditions.</li>`
+      );
+    }
+  }
+
+  const chargedClusterCount = recent.filter((entry) =>
+    ['charged', 'extreme'].includes(entry.band)
+  ).length;
+  if (chargedClusterCount >= Math.ceil(total / 2) && total >= 3) {
+    lines.push(
+      '<li>Your check-ins cluster around charged lunar periods.</li>'
+    );
+  }
+
+  const lunarPhaseHits = recent
+    .map((entry) => entry.moon || '')
+    .reduce(
+      (acc, moon) => {
+        const normalized = moon.toLowerCase();
+        if (normalized.includes('full')) acc.full += 1;
+        if (normalized.includes('new')) acc.new += 1;
+        return acc;
+      },
+      { full: 0, new: 0 }
+    );
+  if (lunarPhaseHits.full + lunarPhaseHits.new >= 2) {
+    const dominantPhase =
+      lunarPhaseHits.full >= lunarPhaseHits.new ? 'full' : 'new';
+    lines.push(
+      `<li>Your bias clusters around ${dominantPhase} moon windows.</li>`
+    );
+  }
 
   list.innerHTML = lines.join('');
 }
