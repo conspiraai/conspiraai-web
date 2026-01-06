@@ -153,7 +153,17 @@ const LUNAR_EVENT_COPY = {
 };
 
 const EMPTY_LUNAR_EVENT_COPY = 'Awaiting next calendar update.';
-const DAILY_SHIFT_FALLBACK = 'Cycle steady — no notable shift today';
+const DAILY_SHIFT_CHANGE_VARIANTS = [
+  'Cycle tension easing.',
+  'Momentum consolidating.',
+  'Phase transition underway.'
+];
+const DAILY_SHIFT_STEADY_VARIANTS = [
+  'Volatility posture unchanged.',
+  'Background rhythm steady.'
+];
+const DAILY_SHIFT_EVENT_RANGE_HOURS = 72;
+const DAILY_SHIFT_FALLBACK = DAILY_SHIFT_STEADY_VARIANTS[0];
 
 function hasTimeComponent(dateStr) {
   return typeof dateStr === 'string' && /T\d{2}:\d{2}/.test(dateStr);
@@ -376,60 +386,57 @@ function renderNextShift(nextEvent) {
   detailEl.textContent = `Next key lunar marker: ${label} · ${dateText}`;
 }
 
+function hashString(value) {
+  return value
+    .split('')
+    .reduce((acc, char) => acc + char.charCodeAt(0), 0);
+}
+
+function pickVariant(variants, seed) {
+  if (!variants || variants.length === 0) return DAILY_SHIFT_FALLBACK;
+  if (!seed) return variants[0];
+  const index = Math.abs(hashString(seed)) % variants.length;
+  return variants[index];
+}
+
+function getBoundaryKey(phaseLabel) {
+  const phase = (phaseLabel || '').toLowerCase();
+  if (phase.includes('full')) return 'full';
+  if (phase.includes('new')) return 'new';
+  if (phase.includes('quarter')) return 'quarter';
+  return null;
+}
+
+function isKeyEventWithinRange(nextEvent, now, rangeHours) {
+  if (!nextEvent?.date) return false;
+  const eventDate = new Date(nextEvent.date);
+  if (Number.isNaN(eventDate.getTime())) return false;
+  const diffHours = (eventDate - now) / (1000 * 60 * 60);
+  return diffHours >= 0 && diffHours <= rangeHours;
+}
+
 function buildDailyShiftMessage({ lunar, nextEvent, now = new Date() } = {}) {
-  if (!lunar && !nextEvent) return DAILY_SHIFT_FALLBACK;
+  const boundaryKey = getBoundaryKey(lunar?.moonPhase);
+  const inRange = isKeyEventWithinRange(
+    nextEvent,
+    now,
+    DAILY_SHIFT_EVENT_RANGE_HOURS
+  );
+  // Daily Shift is a contextual state indicator, not a signal.
+  const stateKey = inRange
+    ? `event:${nextEvent?.date || 'unknown'}`
+    : boundaryKey
+      ? `boundary:${boundaryKey}`
+      : 'steady';
+  const variants =
+    inRange || boundaryKey
+      ? DAILY_SHIFT_CHANGE_VARIANTS
+      : DAILY_SHIFT_STEADY_VARIANTS;
 
-  if (nextEvent?.date) {
-    const eventDate = new Date(nextEvent.date);
-    if (!Number.isNaN(eventDate.getTime())) {
-      const diffMs = eventDate - now;
-      if (diffMs >= 0) {
-        const diffHours = Math.round(diffMs / (1000 * 60 * 60));
-        if (diffHours <= 2) {
-          return 'Lunar phase transition nearing the current window.';
-        }
-        if (diffHours <= 24) {
-          return `Lunar phase transitioning in ~${diffHours} hours.`;
-        }
-        if (diffHours <= 72) {
-          const diffDays = Math.max(1, Math.round(diffHours / 24));
-          return `Phase window approaching in ~${diffDays} days.`;
-        }
-      }
-    }
-  }
-
-  const phase = (lunar?.moonPhase || '').toLowerCase();
-  const illumination = !isNaN(lunar?.moonIllumination)
-    ? lunar.moonIllumination
-    : null;
-
-  if (phase.includes('quarter')) {
-    return 'Illumination inflection passing the quarter mark.';
-  }
-  if (phase.includes('gibbous')) {
-    return 'Gibbous arc in motion — illumination still shifting.';
-  }
-  if (phase.includes('crescent')) {
-    return 'Crescent arc in motion — illumination still shifting.';
-  }
-  if (phase.includes('full')) {
-    return 'Illumination crest holding near full.';
-  }
-  if (phase.includes('new')) {
-    return 'Illumination floor holding near new.';
-  }
-  if (illumination != null) {
-    if (illumination >= 75) {
-      return 'Illumination climbing through the upper arc.';
-    }
-    if (illumination <= 25) {
-      return 'Illumination rebuilding from the low arc.';
-    }
-    return 'Illumination slope steady within the mid arc.';
-  }
-
-  return DAILY_SHIFT_FALLBACK;
+  return {
+    message: pickVariant(variants, stateKey),
+    stateKey
+  };
 }
 
 function renderDailyShift({ lunar, calendar } = {}) {
@@ -438,10 +445,11 @@ function renderDailyShift({ lunar, calendar } = {}) {
 
   const now = new Date();
   const nextEvent = resolveNextKeyEvent(calendar, now);
-  const phaseKey = lunar?.moonPhase || '';
-  const eventKey = nextEvent?.date || '';
-  const dayKey = now.toISOString().slice(0, 10);
-  const cacheKey = `${dayKey}|${phaseKey}|${eventKey}`;
+  const { message, stateKey } = buildDailyShiftMessage({
+    lunar,
+    nextEvent,
+    now
+  });
 
   let cachedKey = null;
   let cachedMessage = null;
@@ -453,16 +461,15 @@ function renderDailyShift({ lunar, calendar } = {}) {
     cachedMessage = null;
   }
 
-  if (cachedKey === cacheKey && cachedMessage) {
+  if (cachedKey === stateKey && cachedMessage) {
     el.textContent = cachedMessage;
     return;
   }
 
-  const message = buildDailyShiftMessage({ lunar, nextEvent, now });
   el.textContent = message;
 
   try {
-    localStorage.setItem('dailyShiftKey', cacheKey);
+    localStorage.setItem('dailyShiftKey', stateKey);
     localStorage.setItem('dailyShiftMessage', message);
   } catch (err) {
     // fail silently
