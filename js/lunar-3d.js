@@ -99,13 +99,15 @@ function computePhase(date) {
 }
 
 function updateInfoPanel({ date, phaseName, illumination, price }) {
-  timestampEl.textContent = formatTimestamp(date);
-  phaseEl.textContent = phaseName || '–';
-  illuminationEl.textContent =
-    illumination == null || Number.isNaN(illumination)
-      ? '–'
-      : `${illumination.toFixed(1)}%`;
-  priceEl.textContent = formatPrice(price);
+  if (timestampEl) timestampEl.textContent = formatTimestamp(date);
+  if (phaseEl) phaseEl.textContent = phaseName || '–';
+  if (illuminationEl) {
+    illuminationEl.textContent =
+      illumination == null || Number.isNaN(illumination)
+        ? '–'
+        : `${illumination.toFixed(1)}%`;
+  }
+  if (priceEl) priceEl.textContent = formatPrice(price);
 }
 
 function updateMoonPosition(angle) {
@@ -120,7 +122,7 @@ function updateCursor(index) {
 }
 
 function updateFallbackScene(illumination) {
-  if (!fallbackContext) return;
+  if (!fallbackContext || !stage || !canvas) return;
   const rect = stage.getBoundingClientRect();
   const width = Math.max(1, rect.width);
   const height = Math.max(1, rect.height);
@@ -324,20 +326,20 @@ async function loadMarketData() {
 }
 
 function updateMarketUI(hasData, usedFallback) {
-  if (hasData) {
-    marketStatus.textContent = usedFallback ? MARKET_STATUS_FALLBACK : MARKET_STATUS_LOADED;
-    rangeInput.disabled = false;
-    playButton.disabled = prefersReducedMotion;
-  } else {
-    marketStatus.textContent = 'Market data unavailable. Lunar model still active.';
-    rangeInput.disabled = true;
-    playButton.disabled = true;
+  if (marketStatus) {
+    marketStatus.textContent = hasData
+      ? usedFallback
+        ? MARKET_STATUS_FALLBACK
+        : MARKET_STATUS_LOADED
+      : 'Market data unavailable. Lunar model still active.';
   }
+  if (rangeInput) rangeInput.disabled = !hasData;
+  if (playButton) playButton.disabled = !hasData || prefersReducedMotion;
 }
 
 function setPlayState(playing) {
   state.isPlaying = playing && !prefersReducedMotion;
-  playButton.textContent = state.isPlaying ? 'Pause' : 'Play';
+  if (playButton) playButton.textContent = state.isPlaying ? 'Pause' : 'Play';
 }
 
 function onResize() {
@@ -401,6 +403,7 @@ function stopAnimation() {
 }
 
 function initFallback() {
+  if (!canvas) return;
   fallbackContext = canvas.getContext('2d');
   if (!fallbackContext) return;
   fallbackStars = Array.from({ length: 80 }).map(() => ({
@@ -573,18 +576,22 @@ async function initThreeScene() {
 }
 
 function attachEventListeners() {
-  rangeInput.addEventListener('input', (event) => {
-    const value = Number(event.target.value);
-    applyTimelineIndex(value);
-    if (state.isPlaying) {
-      setPlayState(false);
-    }
-  });
+  if (rangeInput) {
+    rangeInput.addEventListener('input', (event) => {
+      const value = Number(event.target.value);
+      applyTimelineIndex(value);
+      if (state.isPlaying) {
+        setPlayState(false);
+      }
+    });
+  }
 
-  playButton.addEventListener('click', () => {
-    if (prefersReducedMotion) return;
-    setPlayState(!state.isPlaying);
-  });
+  if (playButton) {
+    playButton.addEventListener('click', () => {
+      if (prefersReducedMotion) return;
+      setPlayState(!state.isPlaying);
+    });
+  }
 
   window.addEventListener('resize', onResize);
   window.addEventListener('orientationchange', onResize);
@@ -599,9 +606,9 @@ function attachEventListeners() {
 }
 
 async function initMarket() {
-  marketStatus.textContent = MARKET_STATUS_LOADING;
-  rangeInput.disabled = true;
-  playButton.disabled = true;
+  if (marketStatus) marketStatus.textContent = MARKET_STATUS_LOADING;
+  if (rangeInput) rangeInput.disabled = true;
+  if (playButton) playButton.disabled = true;
 
   const { data, usedFallback } = await loadMarketData();
   state.marketData = data;
@@ -615,7 +622,7 @@ async function initMarket() {
   updateMarketUI(Boolean(data.length), usedFallback);
 
   if (data.length) {
-    rangeInput.max = String(data.length - 1);
+    if (rangeInput) rangeInput.max = String(data.length - 1);
     applyTimelineIndex(data.length - 1);
     state.playhead = data.length - 1;
   } else {
@@ -626,6 +633,10 @@ async function initMarket() {
 }
 
 async function init() {
+  if (!stage || !canvas) {
+    // Defensive: avoid errors if the 3D mount is missing.
+    return;
+  }
   updateSceneStatus('Loading scene…');
   initFallback();
   attachEventListeners();
