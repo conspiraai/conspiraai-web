@@ -153,6 +153,7 @@ const LUNAR_EVENT_COPY = {
 };
 
 const EMPTY_LUNAR_EVENT_COPY = 'Awaiting next calendar update.';
+const DAILY_SHIFT_FALLBACK = 'Cycle steady — no notable shift today';
 
 function hasTimeComponent(dateStr) {
   return typeof dateStr === 'string' && /T\d{2}:\d{2}/.test(dateStr);
@@ -210,6 +211,15 @@ function getNextUpcomingEvent(events, now = new Date()) {
     .filter((evt) => evt.parsedDate >= now)
     .sort((a, b) => a.parsedDate - b.parsedDate);
   return upcoming[0] || null;
+}
+
+function resolveNextKeyEvent(calendar, now = new Date()) {
+  if (!calendar || !Array.isArray(calendar.upcomingEvents)) return null;
+  const filtered = calendar.upcomingEvents.filter((evt) => {
+    const type = String(evt?.type || evt?.label || '').toLowerCase();
+    return type.includes('full') || type.includes('new');
+  });
+  return getNextUpcomingEvent(filtered, now);
 }
 
 function getUpcomingLunarEvents(events, now = new Date()) {
@@ -366,6 +376,99 @@ function renderNextShift(nextEvent) {
   detailEl.textContent = `Next key lunar marker: ${label} · ${dateText}`;
 }
 
+function buildDailyShiftMessage({ lunar, nextEvent, now = new Date() } = {}) {
+  if (!lunar && !nextEvent) return DAILY_SHIFT_FALLBACK;
+
+  if (nextEvent?.date) {
+    const eventDate = new Date(nextEvent.date);
+    if (!Number.isNaN(eventDate.getTime())) {
+      const diffMs = eventDate - now;
+      if (diffMs >= 0) {
+        const diffHours = Math.round(diffMs / (1000 * 60 * 60));
+        if (diffHours <= 2) {
+          return 'Lunar phase transition nearing the current window.';
+        }
+        if (diffHours <= 24) {
+          return `Lunar phase transitioning in ~${diffHours} hours.`;
+        }
+        if (diffHours <= 72) {
+          const diffDays = Math.max(1, Math.round(diffHours / 24));
+          return `Phase window approaching in ~${diffDays} days.`;
+        }
+      }
+    }
+  }
+
+  const phase = (lunar?.moonPhase || '').toLowerCase();
+  const illumination = !isNaN(lunar?.moonIllumination)
+    ? lunar.moonIllumination
+    : null;
+
+  if (phase.includes('quarter')) {
+    return 'Illumination inflection passing the quarter mark.';
+  }
+  if (phase.includes('gibbous')) {
+    return 'Gibbous arc in motion — illumination still shifting.';
+  }
+  if (phase.includes('crescent')) {
+    return 'Crescent arc in motion — illumination still shifting.';
+  }
+  if (phase.includes('full')) {
+    return 'Illumination crest holding near full.';
+  }
+  if (phase.includes('new')) {
+    return 'Illumination floor holding near new.';
+  }
+  if (illumination != null) {
+    if (illumination >= 75) {
+      return 'Illumination climbing through the upper arc.';
+    }
+    if (illumination <= 25) {
+      return 'Illumination rebuilding from the low arc.';
+    }
+    return 'Illumination slope steady within the mid arc.';
+  }
+
+  return DAILY_SHIFT_FALLBACK;
+}
+
+function renderDailyShift({ lunar, calendar } = {}) {
+  const el = document.getElementById('daily-shift-text');
+  if (!el) return;
+
+  const now = new Date();
+  const nextEvent = resolveNextKeyEvent(calendar, now);
+  const phaseKey = lunar?.moonPhase || '';
+  const eventKey = nextEvent?.date || '';
+  const dayKey = now.toISOString().slice(0, 10);
+  const cacheKey = `${dayKey}|${phaseKey}|${eventKey}`;
+
+  let cachedKey = null;
+  let cachedMessage = null;
+  try {
+    cachedKey = localStorage.getItem('dailyShiftKey');
+    cachedMessage = localStorage.getItem('dailyShiftMessage');
+  } catch (err) {
+    cachedKey = null;
+    cachedMessage = null;
+  }
+
+  if (cachedKey === cacheKey && cachedMessage) {
+    el.textContent = cachedMessage;
+    return;
+  }
+
+  const message = buildDailyShiftMessage({ lunar, nextEvent, now });
+  el.textContent = message;
+
+  try {
+    localStorage.setItem('dailyShiftKey', cacheKey);
+    localStorage.setItem('dailyShiftMessage', message);
+  } catch (err) {
+    // fail silently
+  }
+}
+
 function updateAstralRegimeModule(band, score) {
   const module = document.querySelector('.astral-regime');
   if (!module) return;
@@ -495,6 +598,10 @@ async function initAstral() {
 
   updateAstralRegimeModule(band, score);
 
+  const calendar = await fetchLunarCalendar();
+
+  renderDailyShift({ lunar, calendar });
+
   // -----------------
   // Home (index)
   // -----------------
@@ -511,15 +618,8 @@ async function initAstral() {
     setText('aii-updated', timestamp);
     setText('aii-summary', summary);
 
-    const calendar = await fetchLunarCalendar();
-    if (calendar && Array.isArray(calendar.upcomingEvents)) {
-      const filtered = calendar.upcomingEvents.filter((evt) => {
-        const type = String(evt?.type || evt?.label || '').toLowerCase();
-        return type.includes('full') || type.includes('new');
-      });
-      const nextEvent = getNextUpcomingEvent(filtered);
-      renderNextShift(nextEvent);
-    }
+    const nextEvent = resolveNextKeyEvent(calendar);
+    renderNextShift(nextEvent);
 
     scheduleDailyStanceRetry(() => ({
       band: document.body.dataset.aiiBand,
@@ -587,8 +687,6 @@ async function initAstral() {
     document.body.dataset.page === 'lunar' ||
     document.body.dataset.page === 'weekly'
   ) {
-    const calendar = await fetchLunarCalendar();
-
     if (!calendar || !Array.isArray(calendar.upcomingEvents)) {
       setText(
         'lunar-events-status',

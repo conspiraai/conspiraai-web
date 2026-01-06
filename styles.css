@@ -123,6 +123,28 @@ body {
   color: #f9fafb;
 }
 
+.daily-shift {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.2rem;
+  max-width: 240px;
+  font-size: 0.75rem;
+}
+
+.daily-shift-label {
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  color: var(--color-text-soft);
+}
+
+.daily-shift-text {
+  text-align: right;
+  color: var(--color-text);
+  line-height: 1.35;
+}
+
 .nav-underline {
   position: absolute;
   bottom: -6px;
@@ -1093,6 +1115,15 @@ body {
 
   .nav {
     flex-wrap: wrap;
+  }
+
+  .daily-shift {
+    align-items: flex-start;
+    max-width: none;
+  }
+
+  .daily-shift-text {
+    text-align: left;
   }
 
   .hero {
