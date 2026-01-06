@@ -100,41 +100,41 @@ function bandFromScore(score) {
 const ASTRAL_REGIME_COPY = {
   calm: {
     name: 'CALM',
-    posture: 'Normal conditions. Favor clean structure.',
-    rule: 'If price chops, don’t force trades.'
+    posture: 'Calmer volatility with steadier pacing.',
+    rule: 'Ranges tend to stay tighter and more orderly.'
   },
   charged: {
     name: 'CHARGED',
-    posture: 'Volatility expanding. Reduce size.',
-    rule: 'Expect fakeouts. Let levels come to you.'
+    posture: 'Volatility expanding with faster swings.',
+    rule: 'Momentum bursts and reversals show up more often.'
   },
   extreme: {
     name: 'EXTREME',
-    posture: 'High noise. Capital preservation mode.',
-    rule: 'Observation > action.'
+    posture: 'High noise with sharp, uneven bursts.',
+    rule: 'Directionality can be less stable across sessions.'
   }
 };
 
-const DAILY_STANCE_COPY = {
+const DAILY_WEATHER_COPY = {
   calm: {
-    label: 'Participate',
+    label: 'Quiet',
     summary:
-      'Conditions are calmer. Focus on clean setups and patient entries—no need to force trades.'
+      'Background volatility is subdued with cleaner price rhythm.'
   },
   charged: {
-    label: 'Selective',
+    label: 'Active',
     summary:
-      'Risk is elevated. Trade smaller, wait for confirmation, and step aside if setups are not clean.'
+      'Energy is building, with quicker swings and more sudden shifts.'
   },
   extreme: {
-    label: 'Stand Aside',
+    label: 'Turbulent',
     summary:
-      'Noise is high. Preserve capital, observe, and only act on rare A+ setups if any.'
+      'Conditions are jumpy, with sharp moves and heavier noise.'
   },
   unknown: {
     label: '—',
     summary:
-      'Awaiting the live AII band. Keep risk tight and avoid forcing participation.'
+      'Awaiting the live AII band. Risk weather will update shortly.'
   }
 };
 
@@ -312,12 +312,12 @@ function updateDailyStanceBadge(id, label, value) {
   setText(id, `${label}: ${value || '—'}`);
 }
 
-function renderDailyStance({ band, score, lunar, nextEvent } = {}) {
+function renderDailyStance({ band, score, lunar } = {}) {
   const module = document.getElementById('daily-stance');
   if (!module) return;
 
   const resolvedBand = resolveAiiBand({ band, score });
-  const copy = DAILY_STANCE_COPY[resolvedBand] || DAILY_STANCE_COPY.unknown;
+  const copy = DAILY_WEATHER_COPY[resolvedBand] || DAILY_WEATHER_COPY.unknown;
 
   const labelEl = document.getElementById('stance-label');
   if (labelEl) {
@@ -330,27 +330,18 @@ function renderDailyStance({ band, score, lunar, nextEvent } = {}) {
 
   setText('stance-summary', copy.summary);
 
-  updateDailyStanceBadge(
-    'stance-badge-aii',
-    'AII',
-    resolvedBand !== '–'
-      ? normalizeEventLabel(resolvedBand)
-      : '—'
-  );
+  updateDailyStanceBadge('stance-badge-aii', 'AII', score != null ? score : '—');
 
   updateDailyStanceBadge(
-    'stance-badge-moon',
-    'Moon',
-    lunar?.moonPhase || '—'
+    'stance-badge-regime',
+    'Regime',
+    resolvedBand !== '–' ? normalizeEventLabel(resolvedBand) : '—'
   );
 
-  if (nextEvent) {
-    const label = normalizeEventLabel(nextEvent.label || nextEvent.type);
-    const dateText = formatShortDate(nextEvent.parsedDate || new Date(nextEvent.date));
-    setText('stance-badge-next', `Next: ${label} (${dateText})`);
-  } else {
-    setText('stance-badge-next', 'Next: —');
-  }
+  const moonLabel = lunar?.moonPhase
+    ? `${lunar.moonPhase}${!isNaN(lunar.moonIllumination) ? ` · ${lunar.moonIllumination}%` : ''}`
+    : '—';
+  updateDailyStanceBadge('stance-badge-moon', 'Moon', moonLabel);
 }
 
 function scheduleDailyStanceRetry(getData) {
@@ -367,6 +358,18 @@ function scheduleDailyStanceRetry(getData) {
   };
 
   setTimeout(tick, intervalMs);
+}
+
+function renderNextShift(nextEvent) {
+  const detailEl = document.getElementById('next-shift-detail');
+  if (!detailEl) return;
+  if (!nextEvent) {
+    detailEl.textContent = 'Next key lunar marker: —';
+    return;
+  }
+  const label = normalizeEventLabel(nextEvent.label || nextEvent.type);
+  const dateText = formatLunarEventDate(nextEvent);
+  detailEl.textContent = `Next key lunar marker: ${label} · ${dateText}`;
 }
 
 function updateAstralRegimeModule(band, score) {
@@ -523,8 +526,12 @@ async function initAstral() {
 
     const calendar = await fetchLunarCalendar();
     if (calendar && Array.isArray(calendar.upcomingEvents)) {
-      const nextEvent = getNextUpcomingEvent(calendar.upcomingEvents);
-      renderDailyStance({ band, score, lunar, nextEvent });
+      const filtered = calendar.upcomingEvents.filter((evt) => {
+        const type = String(evt?.type || evt?.label || '').toLowerCase();
+        return type.includes('full') || type.includes('new');
+      });
+      const nextEvent = getNextUpcomingEvent(filtered);
+      renderNextShift(nextEvent);
     }
 
     scheduleDailyStanceRetry(() => ({
