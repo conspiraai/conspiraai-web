@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Lunar × Market Timeline 3D – Conspira AI</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Explore a 3D lunar model synced to a market timeline."
+    />
+    <link rel="stylesheet" href="colors.css" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body data-page="lunar-3d">
+    <canvas id="bg-fx" aria-hidden="true"></canvas>
+    <div class="page">
+      <header class="shell site-header">
+        <div class="brand">
+          <div class="brand-mark"></div>
+          <div>
+            <div class="brand-text-main">Conspira AI</div>
+            <div class="brand-text-sub">ASTRAL INTELLIGENCE INDEX</div>
+          </div>
+        </div>
+
+        <nav class="nav">
+          <a id="nav-today" href="index.html">All Today</a>
+          <a id="nav-weekly" href="weekly.html">Weekly Outlook</a>
+          <a id="nav-lunar" href="lunar-cycle.html">Lunar Cycle</a>
+          <a id="nav-lunar-3d" href="lunar-3d.html">3D Lunar</a>
+          <a id="nav-signals" href="signals.html">Context Lab</a>
+          <a id="nav-network" href="network.html">Network</a>
+        </nav>
+      </header>
+
+      <main class="shell main">
+        <section class="section">
+          <div class="section-header">
+            <h1 class="section-title">Lunar × Market Timeline (3D)</h1>
+            <p class="section-sub">
+              A lightweight 3D scene that maps lunar motion to a market timeline. Use the
+              scrubber to align moon phase, illumination, and price context.
+            </p>
+          </div>
+
+          <div class="grid lunar-3d-grid">
+            <article class="card lunar-3d-card">
+              <div class="lunar-3d-stage" id="lunar-3d-stage">
+                <canvas id="lunar-3d-canvas"></canvas>
+                <div class="lunar-3d-overlay">
+                  <span class="lunar-3d-badge">Drag to orbit</span>
+                  <span class="lunar-3d-badge" id="lunar-3d-status">Loading scene…</span>
+                </div>
+              </div>
+            </article>
+
+            <article class="card lunar-3d-panel">
+              <h3>Timeline controls</h3>
+              <p class="section-sub">
+                Scrub the timeline to move the moon and market cursor in sync.
+              </p>
+
+              <div class="lunar-3d-controls">
+                <label class="lunar-3d-label" for="timeline-range">Timeline scrubber</label>
+                <div class="lunar-3d-scrub">
+                  <input
+                    type="range"
+                    id="timeline-range"
+                    min="0"
+                    max="1"
+                    step="1"
+                    value="0"
+                    aria-label="Timeline scrubber"
+                  />
+                  <button class="lunar-3d-button" id="timeline-play" type="button">
+                    Play
+                  </button>
+                </div>
+                <p class="lunar-3d-status" id="market-status">Loading market data…</p>
+              </div>
+
+              <dl class="lunar-3d-meta">
+                <div>
+                  <dt>Selected timestamp</dt>
+                  <dd id="selected-timestamp">–</dd>
+                </div>
+                <div>
+                  <dt>Moon phase</dt>
+                  <dd id="selected-phase">–</dd>
+                </div>
+                <div>
+                  <dt>Illumination</dt>
+                  <dd id="selected-illumination">–</dd>
+                </div>
+                <div>
+                  <dt>Price</dt>
+                  <dd id="selected-price">–</dd>
+                </div>
+              </dl>
+
+              <p class="lunar-3d-disclaimer">
+                Correlation is exploratory / not predictive.
+              </p>
+            </article>
+          </div>
+        </section>
+      </main>
+
+      <footer class="shell site-footer">
+        <p>© Conspira AI 2025 · Volatility context &amp; self-awareness</p>
+        <p class="footer-disclaimer">
+          Conspira AI does not predict price direction. Astral data is a contextual lens,
+          not causal proof. This tool supports awareness and reflection alongside your
+          own systems.
+        </p>
+        <div class="footer-links">
+          <a href="lunar-3d.html">3D Lunar</a>
+        </div>
+      </footer>
+    </div>
+
+    <script src="script.js" defer></script>
+    <script src="bg-fx.js" defer></script>
+    <script src="ui-motion.js" defer></script>
+    <script type="module" src="js/lunar-3d.js"></script>
+  </body>
+</html>
