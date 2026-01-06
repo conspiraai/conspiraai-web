@@ -6,6 +6,7 @@
 
 const IPGEO_API_KEY = '82fd924c51bf4ac48bd9c64119b1d606';
 const IPGEO_ENDPOINT = `https://api.ipgeolocation.io/astronomy?apiKey=${IPGEO_API_KEY}`;
+let lunarCalendarCache = null;
 
 // -----------------------------
 // Helpers
@@ -50,11 +51,13 @@ async function fetchLunarData() {
 // This is updated by the Astral Autopilot workflow.
 async function fetchLunarCalendar() {
   try {
+    if (lunarCalendarCache) return lunarCalendarCache;
     // cache-bust to avoid stale JSON
     const res = await fetch(`data/lunar-data.json?ts=${Date.now()}`);
     if (!res.ok) throw new Error('Non-200 response');
     const data = await res.json();
     console.log('Lunar calendar payload:', data);
+    lunarCalendarCache = data;
     return data;
   } catch (err) {
     console.error('Error fetching lunar calendar:', err);
@@ -112,6 +115,29 @@ const ASTRAL_REGIME_COPY = {
   }
 };
 
+const DAILY_STANCE_COPY = {
+  calm: {
+    label: 'Participate',
+    summary:
+      'Conditions are calmer. Focus on clean setups and patient entries—no need to force trades.'
+  },
+  charged: {
+    label: 'Selective',
+    summary:
+      'Risk is elevated. Trade smaller, wait for confirmation, and step aside if setups are not clean.'
+  },
+  extreme: {
+    label: 'Stand Aside',
+    summary:
+      'Noise is high. Preserve capital, observe, and only act on rare A+ setups if any.'
+  },
+  unknown: {
+    label: '—',
+    summary:
+      'Awaiting the live AII band. Keep risk tight and avoid forcing participation.'
+  }
+};
+
 function formatTime(dateObj) {
   if (!(dateObj instanceof Date)) return '–';
   return dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -119,6 +145,11 @@ function formatTime(dateObj) {
 
 function formatDate(dateObj) {
   if (!(dateObj instanceof Date)) return '–';
+  return dateObj.toLocaleDateString([], { month: 'short', day: 'numeric' });
+}
+
+function formatShortDate(dateObj) {
+  if (!(dateObj instanceof Date) || Number.isNaN(dateObj.getTime())) return '–';
   return dateObj.toLocaleDateString([], { month: 'short', day: 'numeric' });
 }
 
@@ -166,6 +197,25 @@ function buildLunarEventLine(evt, fallbackNote) {
   const note = evt.note || fallbackNote || '';
 
   return [dateText, illum, note].filter(Boolean).join(' · ');
+}
+
+function normalizeEventLabel(rawLabel) {
+  if (!rawLabel) return 'Lunar event';
+  const cleaned = String(rawLabel)
+    .replace(/_/g, ' ')
+    .replace(/-/g, ' ')
+    .toLowerCase();
+  return cleaned.replace(/\b\w/g, (char) => char.toUpperCase());
+}
+
+function getNextUpcomingEvent(events, now = new Date()) {
+  const upcoming = (events || [])
+    .filter((evt) => evt && evt.date)
+    .map((evt) => ({ ...evt, parsedDate: new Date(evt.date) }))
+    .filter((evt) => !Number.isNaN(evt.parsedDate.getTime()))
+    .filter((evt) => evt.parsedDate >= now)
+    .sort((a, b) => a.parsedDate - b.parsedDate);
+  return upcoming[0] || null;
 }
 
 function getUpcomingLunarEvents(events, now = new Date()) {
@@ -236,6 +286,87 @@ function setText(id, value) {
 function setHTML(id, html) {
   const el = document.getElementById(id);
   if (el) el.innerHTML = html;
+}
+
+function readAiiScoreFromDom() {
+  const valueEl = document.getElementById('aii-value');
+  const regimeEl = document.getElementById('astral-regime-value');
+  const raw =
+    (valueEl && valueEl.textContent) ||
+    (regimeEl && regimeEl.textContent) ||
+    '';
+  const parsed = parseInt(raw, 10);
+  return Number.isNaN(parsed) ? null : parsed;
+}
+
+function resolveAiiBand({ band, score } = {}) {
+  if (band && band !== '–') return band;
+  const datasetBand = document.body.dataset.aiiBand;
+  if (datasetBand) return datasetBand;
+  const inferredScore = score != null ? score : readAiiScoreFromDom();
+  return bandFromScore(inferredScore);
+}
+
+function updateDailyStanceBadge(id, label, value) {
+  if (!label) return;
+  setText(id, `${label}: ${value || '—'}`);
+}
+
+function renderDailyStance({ band, score, lunar, nextEvent } = {}) {
+  const module = document.getElementById('daily-stance');
+  if (!module) return;
+
+  const resolvedBand = resolveAiiBand({ band, score });
+  const copy = DAILY_STANCE_COPY[resolvedBand] || DAILY_STANCE_COPY.unknown;
+
+  const labelEl = document.getElementById('stance-label');
+  if (labelEl) {
+    labelEl.textContent = copy.label;
+    labelEl.classList.remove('is-calm', 'is-charged', 'is-extreme');
+    if (resolvedBand === 'calm') labelEl.classList.add('is-calm');
+    if (resolvedBand === 'charged') labelEl.classList.add('is-charged');
+    if (resolvedBand === 'extreme') labelEl.classList.add('is-extreme');
+  }
+
+  setText('stance-summary', copy.summary);
+
+  updateDailyStanceBadge(
+    'stance-badge-aii',
+    'AII',
+    resolvedBand !== '–'
+      ? normalizeEventLabel(resolvedBand)
+      : '—'
+  );
+
+  updateDailyStanceBadge(
+    'stance-badge-moon',
+    'Moon',
+    lunar?.moonPhase || '—'
+  );
+
+  if (nextEvent) {
+    const label = normalizeEventLabel(nextEvent.label || nextEvent.type);
+    const dateText = formatShortDate(nextEvent.parsedDate || new Date(nextEvent.date));
+    setText('stance-badge-next', `Next: ${label} (${dateText})`);
+  } else {
+    setText('stance-badge-next', 'Next: —');
+  }
+}
+
+function scheduleDailyStanceRetry(getData) {
+  let attempts = 0;
+  const maxAttempts = 8;
+  const intervalMs = 250;
+
+  const tick = () => {
+    attempts += 1;
+    const data = getData();
+    renderDailyStance(data);
+    if (resolveAiiBand(data) !== '–' || attempts >= maxAttempts) return;
+    setTimeout(tick, intervalMs);
+  };
+
+  setTimeout(tick, intervalMs);
 }
 
 function updateAstralRegimeModule(band, score) {
@@ -378,6 +509,7 @@ async function initAstral() {
   // Home (index)
   // -----------------
   if (document.body.dataset.page === 'home') {
+    renderDailyStance({ band, score, lunar });
     if (score != null) setText('aii-value', score);
     setText('aii-phase', lunar?.moonPhase || '–');
     setText(
@@ -388,6 +520,18 @@ async function initAstral() {
     );
     setText('aii-updated', timestamp);
     setText('aii-summary', summary);
+
+    const calendar = await fetchLunarCalendar();
+    if (calendar && Array.isArray(calendar.upcomingEvents)) {
+      const nextEvent = getNextUpcomingEvent(calendar.upcomingEvents);
+      renderDailyStance({ band, score, lunar, nextEvent });
+    }
+
+    scheduleDailyStanceRetry(() => ({
+      band: document.body.dataset.aiiBand,
+      score: readAiiScoreFromDom(),
+      lunar
+    }));
   }
 
   // -----------------
