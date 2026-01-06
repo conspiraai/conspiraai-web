@@ -42,7 +42,7 @@ async function fetchLunarData() {
       sunDistanceKm: data.sun_distance
     };
   } catch (err) {
-    console.error('Error fetching lunar data:', err);
+    console.warn('Error fetching lunar data:', err);
     return null;
   }
 }
@@ -60,7 +60,7 @@ async function fetchLunarCalendar() {
     lunarCalendarCache = data;
     return data;
   } catch (err) {
-    console.error('Error fetching lunar calendar:', err);
+    console.warn('Error fetching lunar calendar:', err);
     return null;
   }
 }
