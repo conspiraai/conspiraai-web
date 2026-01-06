@@ -8,7 +8,6 @@ function getStoredCheckins() {
     const parsed = JSON.parse(raw);
     return Array.isArray(parsed) ? parsed : [];
   } catch (error) {
-    console.warn('Unable to parse bias check-ins:', error);
     return [];
   }
 }
