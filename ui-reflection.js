@@ -27,7 +27,6 @@ function storageAvailable() {
     localStorage.removeItem(testKey);
     return true;
   } catch (error) {
-    console.warn('Reflection storage unavailable:', error);
     return false;
   }
 }
@@ -42,7 +41,6 @@ function readVotes() {
     const parsed = JSON.parse(raw);
     return parsed && typeof parsed === 'object' ? parsed : {};
   } catch (error) {
-    console.warn('Unable to parse reflection votes:', error);
     return {};
   }
 }
@@ -55,7 +53,6 @@ function writeVotes(votes) {
   try {
     localStorage.setItem(REFLECTION_STORAGE_KEY, JSON.stringify(votes));
   } catch (error) {
-    console.warn('Unable to save reflection votes:', error);
   }
 }
 

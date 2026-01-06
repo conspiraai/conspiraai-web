@@ -459,7 +459,6 @@ async function loadOrbitControls() {
 
   const rewritten = source.replace(/from ['\"]three['\"]/g, `from '${threeModuleUrl}'`);
   if (rewritten === source || !rewritten.includes(threeModuleUrl)) {
-    console.warn('OrbitControls import rewrite failed; falling back to 2D canvas.');
     return { OrbitControls: null, rewriteFailed: true };
   }
   const controlModuleUrl = createModuleUrl(rewritten);

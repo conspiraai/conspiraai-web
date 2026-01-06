@@ -29,9 +29,6 @@ async function fetchLunarData() {
 
     const moonIllumination = parseIllumination(data.moon_illumination);
 
-    console.log('Astronomy payload:', data);
-    console.log('Parsed moonIllumination:', moonIllumination);
-
     return {
       date: new Date(),
       moonPhase: data.moon_phase,
@@ -42,7 +39,6 @@ async function fetchLunarData() {
       sunDistanceKm: data.sun_distance
     };
   } catch (err) {
-    console.warn('Error fetching lunar data:', err);
     return null;
   }
 }
@@ -56,11 +52,9 @@ async function fetchLunarCalendar() {
     const res = await fetch(`data/lunar-data.json?ts=${Date.now()}`);
     if (!res.ok) throw new Error('Non-200 response');
     const data = await res.json();
-    console.log('Lunar calendar payload:', data);
     lunarCalendarCache = data;
     return data;
   } catch (err) {
-    console.warn('Error fetching lunar calendar:', err);
     return null;
   }
 }
@@ -395,7 +389,6 @@ function updateAstralRegimeModule(band, score) {
 function initAstralCoreMount() {
   const mount = document.getElementById('astral-core');
   if (!mount) {
-    console.warn('Astral Core mount point #astral-core not found.');
     return;
   }
 
@@ -414,7 +407,6 @@ function initAstralCoreMount() {
     const height = Math.max(1, mount.clientHeight);
     canvas.width = width;
     canvas.height = height;
-    console.log('Astral Core canvas size:', width, height);
     if (ctx) {
       ctx.clearRect(0, 0, width, height);
     }
@@ -464,13 +456,8 @@ function initAstralCoreMount() {
     drawGlowingOrb();
   });
 
-  let hasLoggedTick = false;
   const animate = () => {
     drawGlowingOrb();
-    if (!hasLoggedTick) {
-      console.log('Astral Core draw loop tick');
-      hasLoggedTick = true;
-    }
     requestAnimationFrame(animate);
   };
 
