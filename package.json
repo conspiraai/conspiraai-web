@@ -1,0 +1,14 @@
+{
+  "name": "conspiraai-web",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "linkcheck": "node scripts/linkcheck.mjs",
+    "smoke": "node scripts/smoke.mjs",
+    "smoke:headed": "node scripts/smoke.mjs --headed"
+  },
+  "devDependencies": {
+    "playwright": "^1.48.2"
+  }
+}
