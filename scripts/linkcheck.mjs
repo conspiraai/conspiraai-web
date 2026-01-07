@@ -1,15 +1,26 @@
-import { readFile, stat } from 'node:fs/promises';
-import { existsSync } from 'node:fs';
+import { access, readFile, stat } from 'node:fs/promises';
 import { resolve, dirname } from 'node:path';
 
 const root = process.cwd();
-const htmlFiles = [
+const htmlCandidates = [
   'index.html',
   'weekly.html',
   'lunar-cycle.html',
   'lunar-3d.html',
   'signals.html'
-].filter((file) => existsSync(resolve(root, file)));
+];
+const htmlFiles = (
+  await Promise.all(
+    htmlCandidates.map(async (file) => {
+      try {
+        await access(resolve(root, file));
+        return file;
+      } catch {
+        return null;
+      }
+    })
+  )
+).filter(Boolean);
 
 const assetPatterns = [
   /<script[^>]+src=(["'])([^"']+)\1/gi,
@@ -46,15 +57,10 @@ for (const file of htmlFiles) {
       const resolved = asset.startsWith('/')
         ? resolve(root, asset.slice(1))
         : resolve(baseDir, asset);
-      const exists = existsSync(resolved);
-      if (!exists) {
+      try {
+        await stat(resolved);
+      } catch {
         missingAssets.push(`${file}: ${asset}`);
-      } else {
-        try {
-          await stat(resolved);
-        } catch {
-          missingAssets.push(`${file}: ${asset}`);
-        }
       }
     }
   }

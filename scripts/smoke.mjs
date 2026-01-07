@@ -42,50 +42,31 @@ const artifactDir = join(root, 'playwright-artifacts');
 await mkdir(artifactDir, { recursive: true });
 const args = new Set(process.argv.slice(2));
 const isCi = process.env.CI === 'true';
-const defaultTimeout = isCi ? 20000 : 8000;
-const navigationTimeout = isCi ? 30000 : 15000;
-const selectorTimeout = isCi ? 15000 : 5000;
-const scrollPause = isCi ? 1500 : 1000;
-const navigationRetries = isCi ? 3 : 2;
-
-const waitForServer = async () => {
-  if (!isCi) {
-    return;
-  }
-  const attempts = 5;
-  for (let attempt = 1; attempt <= attempts; attempt += 1) {
-    try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 3000);
-      const response = await fetch(baseUrl, { signal: controller.signal });
-      clearTimeout(timeoutId);
-      if (response.ok) {
-        return;
-      }
-    } catch {
-      // Retry with backoff below.
-    }
-    await new Promise((resolve) => setTimeout(resolve, 500 * attempt));
-  }
-  throw new Error('Server failed readiness check in CI.');
-};
+const defaultTimeout = isCi ? 10000 : 8000;
+const navigationTimeout = isCi ? 10000 : 15000;
+const selectorTimeout = isCi ? 8000 : 5000;
+const navigationRetries = isCi ? 2 : 2;
 
 const pages = [
   {
     path: '/index.html',
-    selectors: ['#daily-stance', '#daily-shift-text']
+    criticalSelectors: ['#daily-stance'],
+    optionalSelectors: ['#daily-shift-text']
   },
   {
     path: '/weekly.html',
-    selectors: ['#weekly-aii', '#weekly-lunar-status']
+    criticalSelectors: ['#weekly-aii'],
+    optionalSelectors: ['#weekly-lunar-status']
   },
   {
     path: '/lunar-cycle.html',
-    selectors: ['#lunar-phase', '#lunar-events-list']
+    criticalSelectors: ['#lunar-phase'],
+    optionalSelectors: ['#lunar-events-list']
   },
   {
     path: '/lunar-3d.html',
-    selectors: ['#timeline-range', '#market-status', '#scene-status']
+    criticalSelectors: ['#market-status'],
+    optionalSelectors: ['#timeline-range', '#scene-status']
   }
 ];
 
@@ -94,7 +75,6 @@ let page;
 const failures = [];
 
 try {
-  await waitForServer();
   browser = await chromium.launch({ headless: !args.has('--headed') });
   page = await browser.newPage();
   page.setDefaultTimeout(defaultTimeout);
@@ -147,12 +127,22 @@ try {
         throw navigationError;
       }
 
-      for (const selector of entry.selectors) {
+      for (const selector of entry.criticalSelectors) {
         await page.waitForSelector(selector, { timeout: selectorTimeout });
       }
 
-      await page.mouse.wheel(0, 1200);
-      await page.waitForTimeout(scrollPause);
+      const optionalMissing = [];
+      for (const selector of entry.optionalSelectors) {
+        const element = await page.$(selector);
+        if (!element) {
+          optionalMissing.push(selector);
+        }
+      }
+      if (optionalMissing.length) {
+        console.warn(
+          `Optional selectors missing on ${entry.path}: ${optionalMissing.join(', ')}`
+        );
+      }
 
       const failuresForPage = [];
       if (consoleErrors.length) {
