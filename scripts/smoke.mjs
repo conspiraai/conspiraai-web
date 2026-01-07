@@ -41,6 +41,34 @@ const baseUrl = await serverReady;
 const artifactDir = join(root, 'playwright-artifacts');
 await mkdir(artifactDir, { recursive: true });
 const args = new Set(process.argv.slice(2));
+const isCi = process.env.CI === 'true';
+const defaultTimeout = isCi ? 20000 : 8000;
+const navigationTimeout = isCi ? 30000 : 15000;
+const selectorTimeout = isCi ? 15000 : 5000;
+const scrollPause = isCi ? 1500 : 1000;
+const navigationRetries = isCi ? 3 : 2;
+
+const waitForServer = async () => {
+  if (!isCi) {
+    return;
+  }
+  const attempts = 5;
+  for (let attempt = 1; attempt <= attempts; attempt += 1) {
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 3000);
+      const response = await fetch(baseUrl, { signal: controller.signal });
+      clearTimeout(timeoutId);
+      if (response.ok) {
+        return;
+      }
+    } catch {
+      // Retry with backoff below.
+    }
+    await new Promise((resolve) => setTimeout(resolve, 500 * attempt));
+  }
+  throw new Error('Server failed readiness check in CI.');
+};
 
 const pages = [
   {
@@ -66,9 +94,10 @@ let page;
 const failures = [];
 
 try {
+  await waitForServer();
   browser = await chromium.launch({ headless: !args.has('--headed') });
   page = await browser.newPage();
-  page.setDefaultTimeout(8000);
+  page.setDefaultTimeout(defaultTimeout);
 
   for (const entry of pages) {
     try {
@@ -102,9 +131,12 @@ try {
       });
 
       let navigationError;
-      for (let attempt = 1; attempt <= 2; attempt += 1) {
+      for (let attempt = 1; attempt <= navigationRetries; attempt += 1) {
         try {
-          await page.goto(`${baseUrl}${entry.path}`, { waitUntil: 'networkidle', timeout: 15000 });
+          await page.goto(`${baseUrl}${entry.path}`, {
+            waitUntil: 'networkidle',
+            timeout: navigationTimeout
+          });
           navigationError = null;
           break;
         } catch (error) {
@@ -116,11 +148,11 @@ try {
       }
 
       for (const selector of entry.selectors) {
-        await page.waitForSelector(selector, { timeout: 5000 });
+        await page.waitForSelector(selector, { timeout: selectorTimeout });
       }
 
       await page.mouse.wheel(0, 1200);
-      await page.waitForTimeout(1000);
+      await page.waitForTimeout(scrollPause);
 
       const failuresForPage = [];
       if (consoleErrors.length) {
