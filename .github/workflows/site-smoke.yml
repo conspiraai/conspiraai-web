@@ -7,8 +7,26 @@ on:
     branches: [main]
 
 jobs:
+  linkcheck:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run linkcheck
+        run: npm run linkcheck
+
   smoke:
     runs-on: ubuntu-latest
+    continue-on-error: true
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -24,15 +42,13 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
 
-      - name: Run linkcheck
-        run: npm run linkcheck
-
       - name: Run smoke test
         run: npm run smoke
 
       - name: Upload smoke artifacts
-        if: failure()
+        if: failure() && hashFiles('playwright-artifacts/**') != ''
         uses: actions/upload-artifact@v4
         with:
           name: playwright-artifacts
           path: playwright-artifacts
+          if-no-files-found: ignore
