@@ -520,6 +520,71 @@ body {
   background: rgba(15, 23, 42, 0.5);
 }
 
+/* Today context */
+
+.today-context-slot {
+  margin: 0 0 0.75rem;
+}
+
+.today-context {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.today-context-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  align-items: flex-start;
+}
+
+.today-context-kicker {
+  margin: 0;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--color-text-soft);
+}
+
+.today-context-title {
+  margin: 0.2rem 0 0;
+  font-size: 1.05rem;
+}
+
+.today-context-meta {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.6rem;
+  margin: 0;
+  font-size: 0.8rem;
+}
+
+.today-context-meta dt {
+  color: var(--color-text-soft);
+}
+
+.today-context-meta dd {
+  margin: 0.2rem 0 0;
+}
+
+.today-context-label {
+  margin: 0.1rem 0 0;
+  font-size: 0.82rem;
+  color: var(--color-text-soft);
+}
+
+.today-context-disclaimer {
+  margin: 0.2rem 0 0;
+  font-size: 0.78rem;
+  color: var(--color-ice-yellow);
+}
+
+.today-context-return {
+  margin: 0 0 0.9rem;
+  font-size: 0.85rem;
+  color: var(--color-text-soft);
+}
+
 /* Daily Bias Check-In */
 
 .bias-card {
@@ -905,6 +970,12 @@ body {
   margin-bottom: 1.2rem;
 }
 
+.lunar-3d-helper {
+  margin: 0;
+  font-size: 0.78rem;
+  color: var(--color-text-soft);
+}
+
 .reflection-panel {
   margin-bottom: 1.2rem;
   padding: 0.9rem;
@@ -1042,6 +1113,20 @@ body {
   color: var(--color-text-soft);
 }
 
+.lunar-3d-error {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  padding: 0.6rem 0.75rem;
+  border-radius: 0.8rem;
+  border: 1px solid rgba(248, 113, 113, 0.4);
+  background: rgba(30, 41, 59, 0.6);
+  font-size: 0.78rem;
+  color: #fecaca;
+}
+
 .lunar-3d-meta {
   margin: 0;
   display: grid;
@@ -1137,6 +1222,10 @@ body {
   }
 
   .hero {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .today-context-meta {
     grid-template-columns: minmax(0, 1fr);
   }
 

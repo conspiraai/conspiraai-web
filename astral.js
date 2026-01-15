@@ -168,6 +168,13 @@ const DAILY_SHIFT_STEADY_VARIANTS = [
 const DAILY_SHIFT_EVENT_RANGE_HOURS = 72;
 const DAILY_SHIFT_FALLBACK = DAILY_SHIFT_STEADY_VARIANTS[0];
 
+if (typeof window !== 'undefined') {
+  window.astral = window.astral || {};
+  window.astral.fetchLunarData = fetchLunarData;
+  window.astral.fetchLunarCalendar = fetchLunarCalendar;
+  window.astral.parseIllumination = parseIllumination;
+}
+
 function hasTimeComponent(dateStr) {
   return typeof dateStr === 'string' && /T\d{2}:\d{2}/.test(dateStr);
 }
@@ -613,6 +620,9 @@ async function initAstral() {
 
   // Load live sky data
   const lunar = await fetchLunarData();
+  if (typeof window !== 'undefined' && window.astral) {
+    window.astral.liveLunar = lunar;
+  }
 
   if (!lunar) {
     setText('aii-summary', 'Unable to fetch astral data right now.');

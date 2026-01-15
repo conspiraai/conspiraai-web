@@ -66,12 +66,13 @@
                 <canvas id="lunar-3d-canvas"></canvas>
                 <div class="lunar-3d-overlay">
                   <span class="lunar-3d-badge">Drag to orbit</span>
-                  <span class="lunar-3d-badge" id="lunar-3d-status">Loading scene…</span>
+                  <span class="lunar-3d-badge" id="lunar-3d-status">Initializing 3D…</span>
                 </div>
               </div>
             </article>
 
             <article class="card lunar-3d-panel">
+              <div class="today-context-slot" data-today-context></div>
               <h3>Timeline controls</h3>
               <p class="section-sub">
                 Scrub the timeline to move the moon and market cursor in sync for exploration.
@@ -93,8 +94,15 @@
                     Play
                   </button>
                 </div>
-                <p class="lunar-3d-status" id="market-status">Loading market data…</p>
-                <p class="lunar-3d-status" id="scene-status">Loading scene…</p>
+                <p class="lunar-3d-helper">Scrub to align moon phase + price context.</p>
+                <p class="lunar-3d-status" id="market-status">Fetching market data…</p>
+                <p class="lunar-3d-status" id="scene-status">Initializing 3D…</p>
+                <div class="lunar-3d-error" id="market-error" hidden>
+                  <span>Market data is temporarily unavailable.</span>
+                  <button class="lunar-3d-button" id="market-retry" type="button">
+                    Retry
+                  </button>
+                </div>
               </div>
 
               <div class="reflection-panel" aria-live="polite">
@@ -170,6 +178,7 @@
 
     <script src="astral.js" defer></script>
     <script src="script.js" defer></script>
+    <script type="module" src="components/today-context.js"></script>
     <script src="bg-fx.js" defer></script>
     <script src="ui-motion.js" defer></script>
     <script src="ui-reflection.js" defer></script>

@@ -10,6 +10,8 @@ const sceneStatus = document.getElementById('scene-status');
 const rangeInput = document.getElementById('timeline-range');
 const playButton = document.getElementById('timeline-play');
 const marketStatus = document.getElementById('market-status');
+const marketError = document.getElementById('market-error');
+const marketRetry = document.getElementById('market-retry');
 const timestampEl = document.getElementById('selected-timestamp');
 const phaseEl = document.getElementById('selected-phase');
 const illuminationEl = document.getElementById('selected-illumination');
@@ -25,13 +27,17 @@ const state = {
   baseTimestamp: Date.now(),
   threeReady: false,
   fallbackReady: false,
-  lastIllumination: 50
+  lastIllumination: 50,
+  isMarketLoading: false
 };
 
 const LUNAR_CYCLE_DAYS = 29.53;
 const ORBIT_RADIUS = 3.2;
-const FALLBACK_STATUS = '3D unavailable — showing simplified view.';
-const MARKET_STATUS_LOADING = 'Loading market data…';
+const SCENE_STATUS_INITIALIZING = 'Initializing 3D…';
+const SCENE_STATUS_FETCHING = 'Fetching market data…';
+const SCENE_STATUS_READY = 'Ready';
+const FALLBACK_STATUS = 'WebGL unavailable—use Lunar Cycle view instead.';
+const MARKET_STATUS_LOADING = 'Fetching market data…';
 const MARKET_STATUS_LOADED = 'Market data loaded ✓';
 const MARKET_STATUS_FALLBACK = 'Using fallback market data ✓';
 
@@ -331,7 +337,10 @@ function updateMarketUI(hasData, usedFallback) {
       ? usedFallback
         ? MARKET_STATUS_FALLBACK
         : MARKET_STATUS_LOADED
-      : 'Market data unavailable. Lunar model still active.';
+      : 'Market data unavailable. Use retry to refresh.';
+  }
+  if (marketError) {
+    marketError.hidden = hasData;
   }
   if (rangeInput) rangeInput.disabled = !hasData;
   if (playButton) playButton.disabled = !hasData || prefersReducedMotion;
@@ -476,7 +485,15 @@ function initScene() {
   camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
   camera.position.set(0, 3.5, 9);
 
-  renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+  let rendererInstance = null;
+  try {
+    rendererInstance = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+  } catch (error) {
+    state.threeReady = false;
+    updateSceneStatus(FALLBACK_STATUS);
+    return false;
+  }
+  renderer = rendererInstance;
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
   renderer.setClearColor(0x000000, 0);
 
@@ -553,10 +570,10 @@ function initScene() {
   scene.add(chartGroup);
 
   state.threeReady = true;
-  updateSceneStatus('Scene ready');
   onResize();
   render();
   startAnimation();
+  return true;
 }
 
 async function initThreeScene() {
@@ -593,6 +610,15 @@ function attachEventListeners() {
     });
   }
 
+  if (marketRetry) {
+    marketRetry.addEventListener('click', () => {
+      if (state.threeReady) {
+        updateSceneStatus(SCENE_STATUS_FETCHING);
+      }
+      initMarket();
+    });
+  }
+
   window.addEventListener('resize', onResize);
   window.addEventListener('orientationchange', onResize);
 
@@ -606,9 +632,15 @@ function attachEventListeners() {
 }
 
 async function initMarket() {
+  if (state.isMarketLoading) return;
+  state.isMarketLoading = true;
   if (marketStatus) marketStatus.textContent = MARKET_STATUS_LOADING;
   if (rangeInput) rangeInput.disabled = true;
   if (playButton) playButton.disabled = true;
+  if (marketRetry) {
+    marketRetry.disabled = true;
+    marketRetry.textContent = 'Retrying…';
+  }
 
   const { data, usedFallback } = await loadMarketData();
   state.marketData = data;
@@ -630,6 +662,11 @@ async function initMarket() {
   }
 
   setPlayState(state.isPlaying);
+  state.isMarketLoading = false;
+  if (marketRetry) {
+    marketRetry.disabled = Boolean(data.length);
+    marketRetry.textContent = 'Retry';
+  }
 }
 
 async function init() {
@@ -637,7 +674,7 @@ async function init() {
     // Defensive: avoid errors if the 3D mount is missing.
     return;
   }
-  updateSceneStatus('Loading scene…');
+  updateSceneStatus(SCENE_STATUS_INITIALIZING);
   initFallback();
   attachEventListeners();
 
@@ -645,9 +682,13 @@ async function init() {
 
   if (!state.threeReady) {
     updateSceneStatus(FALLBACK_STATUS);
+  } else {
+    updateSceneStatus(SCENE_STATUS_FETCHING);
   }
-
   await initMarket();
+  if (state.threeReady) {
+    updateSceneStatus(SCENE_STATUS_READY);
+  }
 }
 
 init();
