@@ -520,6 +520,81 @@ body {
   background: rgba(15, 23, 42, 0.5);
 }
 
+/* Daily Anchor Insight */
+
+.daily-anchor-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.daily-anchor-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.daily-anchor-kicker {
+  margin: 0;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--color-text-soft);
+}
+
+.daily-anchor-pill {
+  border-color: rgba(129, 140, 248, 0.5);
+  color: var(--color-ice-blue);
+  background: rgba(129, 140, 248, 0.12);
+}
+
+.daily-anchor-pill.is-full {
+  border-color: rgba(248, 113, 113, 0.55);
+  color: #fecdd3;
+  background: rgba(248, 113, 113, 0.15);
+}
+
+.daily-anchor-pill.is-new {
+  border-color: rgba(59, 130, 246, 0.55);
+  color: #bfdbfe;
+  background: rgba(59, 130, 246, 0.18);
+}
+
+.daily-anchor-pill.is-waxing {
+  border-color: rgba(250, 204, 21, 0.55);
+  color: #fde68a;
+  background: rgba(250, 204, 21, 0.15);
+}
+
+.daily-anchor-pill.is-waning {
+  border-color: rgba(134, 239, 172, 0.55);
+  color: #bbf7d0;
+  background: rgba(134, 239, 172, 0.15);
+}
+
+.daily-anchor-summary {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.daily-anchor-meta {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 0.8rem;
+  row-gap: 0.35rem;
+  margin: 0;
+  font-size: 0.78rem;
+}
+
+.daily-anchor-meta dt {
+  color: var(--color-text-soft);
+}
+
+.daily-anchor-meta dd {
+  margin: 0.06rem 0 0;
+}
+
 /* Daily Bias Check-In */
 
 .bias-card {

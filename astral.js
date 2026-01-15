@@ -135,6 +135,35 @@ const DAILY_WEATHER_COPY = {
   }
 };
 
+const DAILY_ANCHOR_COPY = {
+  full: {
+    label: 'Full Moon',
+    summary:
+      'Peak lunar anchor. Expect heightened sensitivity and faster reactions to new information.'
+  },
+  new: {
+    label: 'New Moon',
+    summary:
+      'Reset lunar anchor. Favor clean observation as sentiment seeds for the next cycle.'
+  },
+  waxing: {
+    label: 'Waxing',
+    summary:
+      'Momentum-building lunar anchor. Context leans toward accumulation and constructive follow-through.'
+  },
+  waning: {
+    label: 'Waning',
+    summary:
+      'Release-phase lunar anchor. Context leans toward digestion, trimming, and calmer pacing.'
+  }
+};
+
+const DAILY_ANCHOR_FALLBACK = {
+  label: 'Neutral',
+  summary:
+    'Market context steady. Lunar anchor unavailable, so maintain a neutral, observant stance.'
+};
+
 function formatTime(dateObj) {
   if (!(dateObj instanceof Date)) return '–';
   return dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -341,6 +370,40 @@ function resolveAiiBand({ band, score } = {}) {
 function updateDailyStanceBadge(id, label, value) {
   if (!label) return;
   setText(id, `${label}: ${value || '—'}`);
+}
+
+function resolvePhaseBucket(phaseLabel) {
+  if (!phaseLabel) return null;
+  const normalized = String(phaseLabel).toLowerCase().replace(/[_-]+/g, ' ');
+  if (normalized.includes('full')) return 'full';
+  if (normalized.includes('new')) return 'new';
+  if (normalized.includes('first quarter')) return 'waxing';
+  if (normalized.includes('last quarter')) return 'waning';
+  return null;
+}
+
+function renderDailyAnchor({ lunar } = {}) {
+  const module = document.getElementById('daily-anchor');
+  if (!module) return;
+
+  const phaseLabel = lunar?.moonPhase || '—';
+  const bucketKey = resolvePhaseBucket(lunar?.moonPhase);
+  const copy = bucketKey ? DAILY_ANCHOR_COPY[bucketKey] : DAILY_ANCHOR_FALLBACK;
+  const bucketLabel = copy?.label || DAILY_ANCHOR_FALLBACK.label;
+  const summary = copy?.summary || DAILY_ANCHOR_FALLBACK.summary;
+
+  const pill = document.getElementById('daily-anchor-bucket');
+  if (pill) {
+    pill.textContent = bucketLabel;
+    pill.classList.remove('is-full', 'is-new', 'is-waxing', 'is-waning');
+    if (bucketKey) {
+      pill.classList.add(`is-${bucketKey}`);
+    }
+  }
+
+  setText('daily-anchor-summary', summary);
+  setText('daily-anchor-phase', phaseLabel);
+  setText('daily-anchor-anchor', bucketLabel);
 }
 
 function renderDailyStance({ band, score, lunar } = {}) {
@@ -644,6 +707,7 @@ async function initAstral() {
   // -----------------
   if (document.body.dataset.page === 'home') {
     renderDailyStance({ band, score, lunar });
+    renderDailyAnchor({ lunar });
     if (score != null) setText('aii-value', score);
     setText('aii-phase', lunar?.moonPhase || '–');
     setText(
