@@ -52,7 +52,11 @@ const ignoredErrorPatterns = [
   /shader/i,
   /requestanimationframe/i,
   /raf/i,
-  /resizeobserver/i
+  /resizeobserver/i,
+  /ipgeolocation/i,
+  /unpkg/i,
+  /jsdelivr/i,
+  /ERR_NAME_NOT_RESOLVED/i
 ];
 
 let browser;

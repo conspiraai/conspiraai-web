@@ -59,14 +59,14 @@ function resolvePhaseBucket(phaseName, illumination) {
   const phase = String(phaseName || '').toLowerCase();
   if (phase.includes('full')) return 'full';
   if (phase.includes('new')) return 'new';
+  if (phase.includes('first quarter')) return 'waxing';
+  if (phase.includes('last quarter')) return 'waning';
   if (phase.includes('waning')) return 'waning';
   if (phase.includes('waxing')) return 'waxing';
 
   if (illumination != null && !Number.isNaN(illumination)) {
     if (illumination >= 90) return 'full';
     if (illumination <= 10) return 'new';
-    if (illumination < 50) return 'waning';
-    return 'waxing';
   }
 
   return 'fallback';
