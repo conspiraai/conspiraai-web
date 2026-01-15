@@ -236,6 +236,12 @@ body {
   margin: 0 0 0.75rem;
 }
 
+.hero-value {
+  margin: 0 0 0.75rem;
+  font-size: 1rem;
+  color: var(--color-text);
+}
+
 .hero-sub {
   font-size: 0.95rem;
   color: var(--color-text-soft);
@@ -1229,6 +1235,10 @@ body {
 
   .hero {
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  .hero-value {
+    font-size: 0.95rem;
   }
 
   .today-context-meta {

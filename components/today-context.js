@@ -98,7 +98,7 @@ function buildContextMarkup({ date, phaseName, illumination, bullets }) {
         <dd>${phaseName || '–'}</dd>
       </div>
       <div>
-        <dt>Illumination</dt>
+        <dt>Illumination (approx.)</dt>
         <dd>${illuminationLabel}</dd>
       </div>
     </dl>
