@@ -15,7 +15,7 @@ const PHASE_BULLETS = {
   waxing: [
     'Trend persistence often improves.',
     'Breakouts tend to see better follow-through.',
-    'Momentum regimes are more common.'
+    'Momentum regimes show up more often.'
   ],
   waning: [
     'More chop tends to appear.',
@@ -106,6 +106,9 @@ function buildContextMarkup({ date, phaseName, illumination, bullets }) {
     <ul class="bullet-list">
       ${bulletItems}
     </ul>
+    <p class="today-context-guidance">
+      Daily use: note the phase context, then compare with your own observations.
+    </p>
     <p class="today-context-disclaimer">Context, not direction.</p>
   `;
 }

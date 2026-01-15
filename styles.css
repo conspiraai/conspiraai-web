@@ -573,6 +573,12 @@ body {
   color: var(--color-text-soft);
 }
 
+.today-context-guidance {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--color-text-soft);
+}
+
 .today-context-disclaimer {
   margin: 0.2rem 0 0;
   font-size: 0.78rem;
@@ -1227,6 +1233,10 @@ body {
 
   .today-context-meta {
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  .today-context-slot {
+    margin-bottom: 0.6rem;
   }
 
   .grid-2,
