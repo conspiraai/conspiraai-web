@@ -68,6 +68,7 @@ function resolvePhaseBucket(phaseName, illumination) {
   if (phase.includes('waxing')) return 'waxing';
 
   if (illumination != null && !Number.isNaN(illumination)) {
+    // Avoid guessing waxing/waning from illumination alone; only use clear full/new thresholds.
     if (illumination >= 90) return 'full';
     if (illumination <= 10) return 'new';
   }
