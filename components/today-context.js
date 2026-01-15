@@ -56,7 +56,10 @@ function normalizePhaseName(rawPhase) {
 }
 
 function resolvePhaseBucket(phaseName, illumination) {
-  const phase = String(phaseName || '').toLowerCase();
+  const phase = String(phaseName || '')
+    .toLowerCase()
+    .replace(/\s+/g, ' ')
+    .trim();
   if (phase.includes('full')) return 'full';
   if (phase.includes('new')) return 'new';
   if (phase.includes('first quarter')) return 'waxing';

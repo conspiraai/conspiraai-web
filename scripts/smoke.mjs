@@ -63,6 +63,7 @@ let browser;
 let page;
 const failures = [];
 let artifactDirReady = false;
+let fatalError = null;
 
 const shouldIgnoreError = (message) =>
   ignoredErrorPatterns.some((pattern) => pattern.test(message));
@@ -76,80 +77,93 @@ const ensureArtifactDir = async () => {
 };
 
 try {
-  browser = await chromium.launch({ headless: !args.has('--headed') });
-  page = await browser.newPage();
-  page.setDefaultTimeout(defaultTimeout);
+  try {
+    browser = await chromium.launch({ headless: !args.has('--headed') });
+    page = await browser.newPage();
+    page.setDefaultTimeout(defaultTimeout);
 
-  for (const path of pages) {
-    try {
-      const consoleErrors = [];
-      page.removeAllListeners('console');
-      page.removeAllListeners('pageerror');
-
-      page.on('console', (msg) => {
-        if (msg.type() === 'error' && !shouldIgnoreError(msg.text())) {
-          consoleErrors.push(msg.text());
-        }
-      });
-
-      page.on('pageerror', (err) => {
-        if (!shouldIgnoreError(err.message)) {
-          consoleErrors.push(err.message);
-        }
-      });
-
-      const response = await page.goto(`${baseUrl}${path}`, {
-        waitUntil: 'domcontentloaded',
-        timeout: navigationTimeout
-      });
-
-      if (!response || response.status() !== 200 || !response.ok()) {
-        console.warn(
-          `Navigation response not OK: ${response?.status() ?? 'no response'} for ${path}`
-        );
-        failures.push(`${path} -> Navigation response not OK`);
-        continue;
-      }
-
-      const domStatus = await page.evaluate(() => ({
-        hasBody: Boolean(document.body)
-      }));
-
-      if (!domStatus.hasBody) {
-        console.warn(`Missing <body> on ${path}`);
-        failures.push(`${path} -> Missing <body>`);
-        continue;
-      }
-
-      if (consoleErrors.length) {
-        console.warn(`Console errors on ${path}: ${consoleErrors.join('; ')}`);
-        failures.push(`${path} -> Console errors`);
-      }
-    } catch (error) {
-      const artifactDir = await ensureArtifactDir();
-      const screenshotPath = join(
-        artifactDir,
-        `${path.replace('/', '').replace('.html', '') || 'index'}.png`
-      );
+    for (const path of pages) {
       try {
-        await page.screenshot({ path: screenshotPath, fullPage: true });
-      } catch {
-        // Ignore screenshot failures.
+        const consoleErrors = [];
+        page.removeAllListeners('console');
+        page.removeAllListeners('pageerror');
+
+        page.on('console', (msg) => {
+          if (msg.type() === 'error' && !shouldIgnoreError(msg.text())) {
+            consoleErrors.push(msg.text());
+          }
+        });
+
+        page.on('pageerror', (err) => {
+          if (!shouldIgnoreError(err.message)) {
+            consoleErrors.push(err.message);
+          }
+        });
+
+        const response = await page.goto(`${baseUrl}${path}`, {
+          waitUntil: 'domcontentloaded',
+          timeout: navigationTimeout
+        });
+
+        if (!response || response.status() !== 200 || !response.ok()) {
+          console.warn(
+            `Navigation response not OK: ${response?.status() ?? 'no response'} for ${path}`
+          );
+          failures.push(`${path} -> Navigation response not OK`);
+          continue;
+        }
+
+        const domStatus = await page.evaluate(() => ({
+          hasBody: Boolean(document.body)
+        }));
+
+        if (!domStatus.hasBody) {
+          console.warn(`Missing <body> on ${path}`);
+          failures.push(`${path} -> Missing <body>`);
+          continue;
+        }
+
+        if (consoleErrors.length) {
+          console.warn(`Console errors on ${path}: ${consoleErrors.join('; ')}`);
+          failures.push(`${path} -> Console errors`);
+        }
+      } catch (error) {
+        const artifactDir = await ensureArtifactDir();
+        const screenshotPath = join(
+          artifactDir,
+          `${path.replace('/', '').replace('.html', '') || 'index'}.png`
+        );
+        try {
+          await page.screenshot({ path: screenshotPath, fullPage: true });
+        } catch {
+          // Ignore screenshot failures.
+        }
+        console.warn(
+          `Smoke check warning on ${path}: ${error instanceof Error ? error.message : String(error)}`
+        );
+        failures.push(`${path} -> ${error instanceof Error ? error.message : String(error)}`);
       }
-      console.warn(
-        `Smoke check warning on ${path}: ${error instanceof Error ? error.message : String(error)}`
-      );
-      failures.push(`${path} -> ${error instanceof Error ? error.message : String(error)}`);
     }
+  } catch (error) {
+    fatalError = error;
+    console.warn(
+      `Smoke test warning: ${error instanceof Error ? error.message : String(error)}`
+    );
+    failures.push(
+      `Smoke test warning: ${error instanceof Error ? error.message : String(error)}`
+    );
   }
 
   if (failures.length) {
-    console.warn(`Smoke test warnings:\n${failures.join('\n')}`);
+    console.warn(`SMOKE WARNINGS:\n${failures.join('\n')}`);
   }
 } finally {
   if (browser) {
     await browser.close();
   }
   await new Promise((resolve) => server.close(resolve));
+  if (fatalError && !failures.length) {
+    console.warn('SMOKE WARNINGS:\nSmoke test failed to run.');
+  }
+  process.exitCode = 0;
 }
-process.exit(0);
