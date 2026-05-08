@@ -2,355 +2,37 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>Conspira AI – Lunaris</title>
+    <title>Conspira AI — Lunaris</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta
-      name="description"
-      content="Conspira AI maps lunar cycles and astral conditions against market volatility to create an Lunaris for contextual awareness."
-    />
     <link rel="icon" href="favicon.svg" type="image/svg+xml" />
-    <link rel="stylesheet" href="colors.css" />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body data-page="home">
     <canvas id="bg-fx" aria-hidden="true"></canvas>
     <div class="page">
       <header class="shell site-header">
-        <div class="brand">
-          <div class="brand-mark"></div>
-          <div>
-            <div class="brand-text-main">CONSPIRA AI</div>
-            <div class="brand-text-sub">Consciousness × Markets × The Sky</div>
-          </div>
-        </div>
-
+        <div><div class="brand-text-main">CONSPIRA AI</div><div class="brand-text-sub">Consciousness × Markets × The Sky</div></div>
         <nav class="nav">
-          <a id="nav-today" href="index.html">All Today</a>
-          <a id="nav-weekly" href="weekly.html">Weekly Outlook</a>
-          <a id="nav-lunar" href="lunar-cycle.html">Lunar Cycle</a>
-          <a id="nav-lunar-3d" href="lunar-3d.html">3D Lunar</a>
-          <a id="nav-signals" href="signals.html">Context Lab</a>
-          <a id="nav-network" href="network.html">Network</a>
+          <a href="index.html">Today</a><a href="weekly.html">Weekly Outlook</a><a href="lunar-cycle.html">Lunar Cycle</a><a href="network.html">Network</a>
         </nav>
-        <div class="daily-shift" aria-live="polite">
-          <span class="daily-shift-label"><span class="status-dot" aria-hidden="true"></span> SIGNAL ACTIVE</span>
-          <span class="daily-shift-text" id="daily-shift-text">
-            Consciousness × Markets × The Sky
-          </span>
-          <span class="daily-shift-meta">
-            Lunaris Score context updates daily
-          </span>
-        </div>
       </header>
-
       <main class="shell main">
-        <!-- HERO / Lunaris Score -->
-        <section class="section hero">
-          <div class="hero-copy">
-            <h1>Context from the sky.<br />Data from the markets.</h1>
-            <p class="hero-sub">
-              Conspira AI is an astral context map for volatility windows.
-              We map lunar cycles and astral conditions against market behaviour to
-              explore a live <strong>Lunaris Score</strong>.
-            </p>
-            <p class="hero-tag">
-              Where cosmic tension becomes a measurable volatility context. A structured index built for awareness.
-            </p>
-          </div>
-
-          <div class="hero-core">
+        <section class="section hero"><h1>CONSPIRA AI</h1><p class="hero-sub">Consciousness × Markets × The Sky</p></section>
+        <section class="section">
+          <div class="aii-card">
+            <div class="aii-header"><span class="pill pill-live">LIVE</span><span class="aii-label">Lunaris Score</span></div>
+            <div class="aii-value" id="aii-value">–</div>
+            <dl class="aii-meta"><div><dt>Moon phase</dt><dd id="aii-phase">–</dd></div><div><dt>Illumination</dt><dd id="aii-illumination">–</dd></div><div><dt>Last update</dt><dd id="aii-updated">–</dd></div></dl>
+            <p class="aii-footnote" id="aii-summary">Fetching live astral conditions…</p>
             <div id="astral-core" class="astral-core"></div>
-
-            <div class="aii-card">
-              <div class="aii-header">
-                <span class="pill pill-live">LIVE</span>
-                <span class="aii-label">Lunaris</span>
-              </div>
-              <div class="aii-value" id="aii-value">–</div>
-              <div class="aii-scale">
-                <span>Calm</span>
-                <span>Charged</span>
-                <span>Extreme</span>
-              </div>
-              <dl class="aii-meta">
-                <div>
-                  <dt>Moon phase</dt>
-                  <dd id="aii-phase">–</dd>
-                </div>
-                <div>
-                  <dt>Illumination</dt>
-                  <dd id="aii-illumination">–</dd>
-                </div>
-                <div>
-                  <dt>Last update</dt>
-                  <dd id="aii-updated">–</dd>
-                </div>
-              </dl>
-              <p class="aii-footnote" id="aii-summary">
-                Fetching live astral conditions…
-              </p>
-            </div>
           </div>
         </section>
-
-        <section class="section daily-stance" aria-live="polite">
-          <div class="section-header">
-            <h2 class="section-title">Today’s Risk Weather</h2>
-            <p class="section-sub">
-              Lunaris Score summarizes the current volatility environment.<br />
-              Framed as context — not a prediction.
-            </p>
-            <details class="helper-block">
-              <summary>How to read this</summary>
-              <div class="helper-block-body">
-                <p><strong>Represents:</strong> a daily snapshot of the Lunaris and the current volatility backdrop.</p>
-                <p><strong>Does not claim:</strong> price direction or trade guidance. Contextual lens. Not prediction.</p>
-              </div>
-            </details>
-          </div>
-
-          <article class="card daily-stance-card" id="daily-stance">
-            <div class="daily-stance-header">
-              <p class="daily-stance-kicker">Volatility report</p>
-              <span class="pill daily-stance-pill" id="stance-label">—</span>
-            </div>
-            <p class="daily-stance-summary" id="stance-summary">
-              Loading today’s risk weather…
-            </p>
-            <p class="daily-stance-check">Quick check: How steady is my attention today?</p>
-            <div class="daily-stance-badges">
-              <span class="badge" id="stance-badge-aii">Lunaris Score: —</span>
-              <span class="badge" id="stance-badge-regime">Regime: —</span>
-              <span class="badge" id="stance-badge-moon">Moon: —</span>
-            </div>
-          </article>
-        </section>
-
-        <section class="section daily-anchor" aria-live="polite">
-          <div class="section-header">
-            <h2 class="section-title">Daily Anchor Insight</h2>
-            <p class="section-sub">Today’s Market Context</p>
-          </div>
-
-          <article class="card daily-anchor-card" id="daily-anchor">
-            <div class="daily-anchor-header">
-              <p class="daily-anchor-kicker">Today’s Market Context</p>
-              <span class="pill daily-anchor-pill" id="daily-anchor-bucket">—</span>
-            </div>
-            <p class="daily-anchor-summary" id="daily-anchor-summary">
-              Loading daily anchor insight…
-            </p>
-            <dl class="daily-anchor-meta">
-              <div>
-                <dt>Moon phase</dt>
-                <dd id="daily-anchor-phase">—</dd>
-              </div>
-              <div>
-                <dt>Anchor bucket</dt>
-                <dd id="daily-anchor-anchor">—</dd>
-              </div>
-            </dl>
-          </article>
-        </section>
-
-        <section class="section bias-checkin" aria-live="polite">
-          <div class="section-header">
-            <h2 class="section-title">Daily Bias Check-In</h2>
-            <p class="section-sub">
-              A primary return loop for self-reflection and bias calibration.
-              A mirror, not a signal.
-            </p>
-          </div>
-
-          <article class="card bias-card">
-            <div class="bias-options" role="group" aria-label="Select your bias">
-              <button class="bias-button" type="button" data-bias="Bullish">Bullish</button>
-              <button class="bias-button" type="button" data-bias="Neutral">Neutral</button>
-              <button class="bias-button" type="button" data-bias="Bearish">Bearish</button>
-            </div>
-            <label class="bias-note-label" for="bias-note">Optional note</label>
-            <textarea
-              class="bias-note"
-              id="bias-note"
-              rows="3"
-              placeholder="What’s driving your bias?"
-            ></textarea>
-            <div class="bias-actions">
-              <button class="bias-save" type="button" id="bias-save">Save check-in</button>
-              <span class="bias-status" id="bias-status" role="status"></span>
-            </div>
-            <p class="bias-disclaimer">Saved locally on this device only.</p>
-          </article>
-
-          <div class="bias-patterns">
-            <h3>Your Patterns (last 14 days)</h3>
-            <ul class="bias-patterns-list" id="bias-patterns-list">
-              <li>No check-ins yet.</li>
-            </ul>
-            <p class="bias-disclaimer">Patterns reflect your inputs, not market outcomes.</p>
-          </div>
-        </section>
-
-        <section class="section">
-          <div class="section-header">
-            <h2 class="section-title">Today’s Astral Regime</h2>
-            <p class="section-sub">
-              A single regime label pulled from the live Lunaris Score band.
-            </p>
-          </div>
-
-          <article class="card astral-regime" id="astral-regime">
-            <div class="astral-regime-header">
-              <div>
-                <p class="astral-regime-label">Regime</p>
-                <div class="astral-regime-name" id="astral-regime-name">–</div>
-              </div>
-              <div class="astral-regime-aii">
-                <p class="astral-regime-aii-label">Lunaris Score</p>
-                <div class="astral-regime-aii-value" id="astral-regime-value">–</div>
-              </div>
-            </div>
-            <p class="astral-regime-posture" id="astral-regime-posture">
-              Loading today’s astral regime…
-            </p>
-            <div class="astral-regime-rule">
-              <p class="astral-regime-rule-label">Context note</p>
-              <p class="astral-regime-rule-text" id="astral-regime-rule">–</p>
-            </div>
-          </article>
-        </section>
-
-        <!-- HOW IT WORKS -->
-        <section class="section">
-          <div class="section-header">
-            <h2 class="section-title">How Conspira AI reads the astral tape</h2>
-            <p class="section-sub">
-              The Lunaris Score is a composite score built from lunar mechanics, geometrics and
-              historical market response during charged windows.
-            </p>
-          </div>
-
-          <div class="grid grid-3">
-            <article class="card">
-              <h3>Lunar mechanics</h3>
-              <p>
-                We pull live astronomy data (phase, illumination, rise / set times)
-                from the current sky over Earth. Full and new moon corridors, eclipses
-                and sharp illumination swings are weighted more heavily.
-              </p>
-            </article>
-
-            <article class="card">
-              <h3>Volatility regimes</h3>
-              <p>
-              Certain phases and windows have historically lined up with outsized
-              volatility and liquidity imbalances. We treat these as “charged
-              regimes” for contextual weighting in the index.
-              </p>
-            </article>
-
-            <article class="card">
-              <h3>Astral context score</h3>
-              <p>
-                The Lunaris Score compresses this into a 0–100 score with simple bands:
-                <strong>0–35</strong> calm, <strong>36–69</strong> charged,
-                <strong>70–100</strong> extreme. It’s non-directional context,
-                designed to surface environmental pressure without implying edge.
-              </p>
-            </article>
-          </div>
-        </section>
-
-        <!-- QUICK LINKS TO OTHER DASHBOARDS -->
-        <section class="section">
-          <div class="section-header">
-            <h2 class="section-title">Dashboards in this build</h2>
-            <p class="section-sub">
-              This v1 is a public cockpit. Deeper tools (backtesting, alerts, custom
-              indices) are already on the roadmap.
-            </p>
-          </div>
-
-          <div class="grid grid-3">
-            <a class="card-link" href="weekly.html">
-              <article class="card card-link-inner">
-                <h3>Weekly Outlook</h3>
-                <p>
-                  A simple read on the current Lunaris Score band and how this week’s astral
-                  regime contextualizes volatility conditions.
-                </p>
-                <span class="card-cta">Open weekly outlook →</span>
-              </article>
-            </a>
-
-            <a class="card-link" href="lunar-cycle.html">
-              <article class="card card-link-inner">
-                <h3>Lunar Cycle</h3>
-                <p>
-                  Detailed moon data: phase, illumination, rise / set and a simple
-                  forward view of upcoming charged windows.
-                </p>
-                <span class="card-cta">Open lunar dashboard →</span>
-              </article>
-            </a>
-
-            <a class="card-link" href="signals.html">
-              <article class="card card-link-inner">
-                <h3>Context Lab</h3>
-                <p>
-                  Concept space for volatility context, tension lenses and future
-                  integrations with Solana orderflow and on-chain data.
-                </p>
-                <span class="card-cta">View context lab →</span>
-              </article>
-            </a>
-
-            <a class="card-link" href="network.html">
-              <article class="card card-link-inner">
-                <h3>Network</h3>
-                <p>
-                  Get plugged into the Conspira AI network—X, Telegram, and future
-                  protocol updates.
-                </p>
-                <span class="card-cta">Join the network →</span>
-              </article>
-            </a>
-          </div>
-        </section>
-        <section class="section next-shift" aria-live="polite">
-          <div class="section-header">
-            <h2 class="section-title">Daily Return Check</h2>
-          </div>
-          <ul class="bullet-list">
-            <li>Has the risk weather shifted?</li>
-            <li>Is the volatility regime changing?</li>
-            <li>Does today’s environment match your bias?</li>
-          </ul>
-          <p class="next-shift-detail next-shift-highlight" id="next-shift-detail">
-            Next lunar shift (tomorrow’s context): —
-          </p>
-          <p class="next-shift-detail">
-            Check back after the next lunar transition to compare market behavior before and after.
-          </p>
-        </section>
+        <section class="section"><h2 class="section-title">Three Pillars</h2><div class="grid grid-3"><article class="card"><h3>Lunar Mechanics</h3></article><article class="card"><h3>Lunaris Score</h3></article><article class="card"><h3>Inner Calibration</h3></article></div></section>
+        <section class="section"><h2 class="section-title">Email Capture</h2><input type="email" placeholder="YOUR EMAIL" /><div style="margin-top:.8rem"><button type="button">JOIN LUNARIS</button></div></section>
+        <section class="section"><h2 class="section-title">Dashboard</h2><div class="grid grid-3"><a class="card" href="weekly.html">Weekly Outlook</a><a class="card" href="lunar-cycle.html">Lunar Cycle</a><a class="card" href="network.html">Network</a></div></section>
       </main>
-
-      <footer class="shell site-footer">
-        <p>© Conspira AI 2025 · Volatility context &amp; self-awareness</p>
-        <p class="footer-disclaimer">
-          Conspira AI offers volatility context for exploration and reflection.
-          Astral inputs are correlation cues, not causal proof. Contextual lens. Not prediction.
-        </p>
-        <div class="footer-links">
-          <a href="lunar-3d.html">3D Lunar</a>
-        </div>
-      </footer>
+      <footer class="shell site-footer"><p>© Conspira AI 2025</p></footer>
     </div>
-
-    <script src="astral.js" defer></script>
-    <script src="script.js" defer></script>
-    <script src="ui-journal.js" defer></script>
-    <script src="bg-fx.js" defer></script>
-    <script src="ui-motion.js" defer></script>
+    <script src="astral.js" defer></script><script src="script.js" defer></script><script src="bg-fx.js" defer></script><script src="ui-motion.js" defer></script>
   </body>
 </html>
