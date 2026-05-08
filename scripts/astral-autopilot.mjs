@@ -98,7 +98,7 @@ function buildSummary(lunar, score) {
     phaseNote = "Transitional phases between major regime shifts.";
   }
 
-  return `AII: ${score} (${band}). ${hook} ${phaseNote}`;
+  return `Lunaris Score: ${score} (${band}). ${hook} ${phaseNote}`;
 }
 
 // ------------ main ------------

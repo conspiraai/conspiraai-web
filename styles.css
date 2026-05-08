@@ -2,7 +2,6 @@
  * Global styles for Conspira AI
  */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 *,
 *::before,
@@ -352,7 +351,7 @@ body {
   color: var(--color-ice-blue);
 }
 
-/* AII card */
+/* Lunaris Score card */
 
 .aii-card {
   background: radial-gradient(circle at top, #111827 0, #020617 60%);
@@ -838,7 +837,7 @@ body {
   }
 }
 
-/* Inline AII for signals page */
+/* Inline Lunaris Score for signals page */
 
 .aii-inline {
   display: flex;
@@ -1228,3 +1227,18 @@ body {
     display: none;
   }
 }
+
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Syncopate:wght@400;700&family=Space+Mono:wght@400;700&display=swap');
+body { font-family: 'Cormorant Garamond', serif; background:#000 !important; color:var(--color-text); }
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140' viewBox='0 0 140 140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='2'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='.3'/%3E%3C/svg%3E");opacity:.03}
+.page{z-index:1}
+.brand-text-main,.section-title,h1,h2,h3,h4,.network-label{font-family:'Syncopate',sans-serif;letter-spacing:.08em;color:#c8a96e;text-transform:uppercase}
+.brand-text-sub,.nav a,.daily-shift-label,.daily-shift-text,.daily-shift-meta,.pill,.badge,.network-link a{font-family:'Space Mono',monospace;letter-spacing:.08em}
+.brand-mark{background:#c8a96e !important;box-shadow:0 0 16px rgba(200,169,110,.45)}
+.nav a{color:#8a8fa0;border:1px solid transparent}
+.nav a:hover,.nav a.nav-active{color:#c8a96e;border-color:rgba(200,169,110,.28);background:rgba(200,169,110,.08)}
+.card,.network-card,.astral-core,.site-header,.site-footer,.helper-block,.bias-note,.lunar-3d-stage{background:#000 !important;border:1px solid rgba(200,169,110,.12)!important;box-shadow:none!important}
+.hero-tag,.section-sub,.footer-disclaimer,p,li,dd,dt{color:#f0ede8}
+.daily-shift-label,.daily-shift-meta,.section-sub,.hero-sub{color:#8a8fa0!important}
+.status-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#c8a96e;box-shadow:0 0 12px rgba(200,169,110,.9);animation:pulseGold 1.6s infinite}
+@keyframes pulseGold{0%,100%{opacity:.45;transform:scale(.9)}50%{opacity:1;transform:scale(1)}}
