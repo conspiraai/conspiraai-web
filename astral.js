@@ -1,6 +1,6 @@
 /*
  * Conspira AI – astral.js
- * Fetches live lunar data from ipgeolocation.io and computes the Astral Intelligence Index (AII).
+ * Fetches live lunar data from ipgeolocation.io and computes the Lunaris Score.
  * Also reads a pre-computed lunar calendar from data/lunar-data.json (updated via GitHub Actions).
  */
 
@@ -62,7 +62,7 @@ async function fetchLunarCalendar() {
   }
 }
 
-// AII score model: illumination + phase bands
+// Lunaris Score score model: illumination + phase bands
 function computeAII(lunar) {
   if (!lunar) return null;
 
@@ -131,7 +131,7 @@ const DAILY_WEATHER_COPY = {
   unknown: {
     label: '—',
     summary:
-      'Awaiting the live AII band. Risk weather will update shortly.'
+      'Awaiting the live Lunaris Score band. Risk weather will update shortly.'
   }
 };
 
@@ -333,7 +333,7 @@ function buildSummary(lunar, score) {
       'Transitional phases between major regime shifts.';
   }
 
-  return `AII: ${score} (${band}). ${hook} ${phaseNote}`;
+  return `Lunaris Score: ${score} (${band}). ${hook} ${phaseNote}`;
 }
 
 // Populate elements if they exist
@@ -424,7 +424,7 @@ function renderDailyStance({ band, score, lunar } = {}) {
 
   setText('stance-summary', copy.summary);
 
-  updateDailyStanceBadge('stance-badge-aii', 'AII', score != null ? score : '—');
+  updateDailyStanceBadge('stance-badge-aii', 'Lunaris Score', score != null ? score : '—');
 
   updateDailyStanceBadge(
     'stance-badge-regime',

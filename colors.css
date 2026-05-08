@@ -1,31 +1,15 @@
-/*
- * Conspira AI colour system
- * Dark base + ice pink / ice blue / ice yellow + solar coral accents.
- */
-
 :root {
-  /* Base */
-  --color-bg: #020616;
-  --color-bg-soft: #05091f;
-  --color-surface: #070b23;
-  --color-surface-alt: #0b102b;
-
-  --color-text: #e5e7eb;
-  --color-text-soft: #9ca3af;
-  --color-border: #1f2937;
-  --color-border-soft: #111827;
-
-  /* Brand palette */
-  --color-ice-pink: #ff8ad6;
-  --color-ice-blue: #7fdbff;
-  --color-ice-yellow: #fff7a8;
-  --color-solar-coral: #ff5242;
-
-  /* Derived accents */
-  --color-primary: var(--color-ice-pink);
-  --color-primary-soft: rgba(255, 138, 214, 0.18);
-  --color-primary-strong: #ff5dbf;
-
-  --color-success: #22c55e;
-  --color-danger: #f97373;
+  --color-bg: #000000;
+  --color-bg-soft: #000000;
+  --color-surface: #000000;
+  --color-surface-alt: #000000;
+  --color-text: #f0ede8;
+  --color-text-soft: #8a8fa0;
+  --color-border: rgba(200, 169, 110, 0.16);
+  --color-border-soft: rgba(200, 169, 110, 0.1);
+  --color-primary: #c8a96e;
+  --color-primary-soft: rgba(200, 169, 110, 0.16);
+  --color-primary-strong: #c8a96e;
+  --color-success: #c8a96e;
+  --color-danger: #8a8fa0;
 }
