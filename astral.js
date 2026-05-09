@@ -259,6 +259,11 @@ function normalizeEventLabel(rawLabel) {
   return cleaned.replace(/\b\w/g, (char) => char.toUpperCase());
 }
 
+function formatMoonPhaseLabel(rawPhase) {
+  if (!rawPhase) return '–';
+  return normalizeEventLabel(rawPhase);
+}
+
 function getNextUpcomingEvent(events, now = new Date()) {
   const upcoming = (events || [])
     .filter((evt) => evt && evt.date)
@@ -279,26 +284,49 @@ function resolveNextKeyEvent(calendar, now = new Date()) {
 }
 
 function getUpcomingLunarEvents(events, now = new Date()) {
+  const LUNATION_MS = 29.530588 * 24 * 60 * 60 * 1000;
   const normalized = (events || [])
     .filter((evt) => evt && evt.date)
-    .map((evt) => ({ ...evt, parsedDate: new Date(evt.date) }))
-    .filter((evt) => !Number.isNaN(evt.parsedDate.getTime()))
-    .filter((evt) => evt.parsedDate >= now)
+    .map((evt) => ({ ...evt, parsedDate: safeParseDate(evt.date) }))
+    .filter((evt) => evt.parsedDate)
     .sort((a, b) => a.parsedDate - b.parsedDate);
 
-  const fullEvents = normalized.filter((evt) =>
-    String(evt.type || evt.label || '').toLowerCase().includes('full')
-  );
-  const newEvents = normalized.filter((evt) =>
-    String(evt.type || evt.label || '').toLowerCase().includes('new')
-  );
+  const isFuture = (evt) => evt && evt.parsedDate >= now;
+  const advanceToFuture = (evt) => {
+    if (!evt || !evt.parsedDate) return null;
+    if (evt.parsedDate >= now) return evt;
 
-  return {
-    nextFull: fullEvents[0],
-    nextFull2: fullEvents[1],
-    nextNew: newEvents[0],
-    nextNew2: newEvents[1]
+    const diffMs = now - evt.parsedDate;
+    const cycles = Math.floor(diffMs / LUNATION_MS) + 1;
+    const nextDate = new Date(evt.parsedDate.getTime() + cycles * LUNATION_MS);
+
+    return {
+      ...evt,
+      date: nextDate.toISOString(),
+      parsedDate: nextDate,
+      note: evt.note || LUNAR_EVENT_COPY[String(evt.type || evt.label || '').toLowerCase().includes('full') ? 'full' : 'new']
+    };
   };
+
+  const fullEvents = normalized
+    .filter((evt) => String(evt.type || evt.label || '').toLowerCase().includes('full'));
+  const newEvents = normalized
+    .filter((evt) => String(evt.type || evt.label || '').toLowerCase().includes('new'));
+
+  const fullFuture = fullEvents.filter(isFuture);
+  const newFuture = newEvents.filter(isFuture);
+
+  const nextFull = fullFuture[0] || advanceToFuture(fullEvents[fullEvents.length - 1]);
+  const nextNew = newFuture[0] || advanceToFuture(newEvents[newEvents.length - 1]);
+
+  const nextFull2 = fullFuture[1] || (nextFull
+    ? { ...nextFull, parsedDate: new Date(nextFull.parsedDate.getTime() + LUNATION_MS), date: new Date(nextFull.parsedDate.getTime() + LUNATION_MS).toISOString() }
+    : null);
+  const nextNew2 = newFuture[1] || (nextNew
+    ? { ...nextNew, parsedDate: new Date(nextNew.parsedDate.getTime() + LUNATION_MS), date: new Date(nextNew.parsedDate.getTime() + LUNATION_MS).toISOString() }
+    : null);
+
+  return { nextFull, nextFull2, nextNew, nextNew2 };
 }
 
 // Generate a short summary string for the index
@@ -386,7 +414,7 @@ function renderDailyAnchor({ lunar } = {}) {
   const module = document.getElementById('daily-anchor');
   if (!module) return;
 
-  const phaseLabel = lunar?.moonPhase || '—';
+  const phaseLabel = formatMoonPhaseLabel(lunar?.moonPhase) || '—';
   const bucketKey = resolvePhaseBucket(lunar?.moonPhase);
   const copy = bucketKey ? DAILY_ANCHOR_COPY[bucketKey] : DAILY_ANCHOR_FALLBACK;
   const bucketLabel = copy?.label || DAILY_ANCHOR_FALLBACK.label;
@@ -433,7 +461,7 @@ function renderDailyStance({ band, score, lunar } = {}) {
   );
 
   const moonLabel = lunar?.moonPhase
-    ? `${lunar.moonPhase}${!isNaN(lunar.moonIllumination) ? ` · ${lunar.moonIllumination}%` : ''}`
+    ? `${formatMoonPhaseLabel(lunar.moonPhase)}${!isNaN(lunar.moonIllumination) ? ` · ${lunar.moonIllumination}%` : ''}`
     : '—';
   updateDailyStanceBadge('stance-badge-moon', 'Moon', moonLabel);
 }
@@ -636,7 +664,7 @@ async function initAstral() {
     renderDailyStance({ band, score, lunar });
     renderDailyAnchor({ lunar });
     if (score != null) setText('aii-value', score);
-    setText('aii-phase', lunar?.moonPhase || '–');
+    setText('aii-phase', formatMoonPhaseLabel(lunar?.moonPhase));
     setText(
       'aii-illumination',
       lunar && !isNaN(lunar.moonIllumination)
@@ -660,7 +688,7 @@ async function initAstral() {
   // Lunar page (live sky section)
   // -----------------
   if (document.body.dataset.page === 'lunar') {
-    setText('lunar-phase', lunar?.moonPhase || '–');
+    setText('lunar-phase', formatMoonPhaseLabel(lunar?.moonPhase));
     setText(
       'lunar-illumination',
       lunar && !isNaN(lunar.moonIllumination)
@@ -681,7 +709,7 @@ async function initAstral() {
   // -----------------
   if (document.body.dataset.page === 'signals') {
     if (score != null) setText('signals-aii', score);
-    setText('signals-phase', lunar?.moonPhase || '–');
+    setText('signals-phase', formatMoonPhaseLabel(lunar?.moonPhase));
     setText(
       'signals-illumination',
       lunar && !isNaN(lunar.moonIllumination)
@@ -697,7 +725,7 @@ async function initAstral() {
   if (document.body.dataset.page === 'weekly') {
     if (score != null) setText('weekly-aii', score);
     setText('weekly-band', band);
-    setText('weekly-phase', lunar?.moonPhase || '–');
+    setText('weekly-phase', formatMoonPhaseLabel(lunar?.moonPhase));
     setText(
       'weekly-illumination',
       lunar && !isNaN(lunar.moonIllumination)
