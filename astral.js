@@ -590,81 +590,8 @@ function updateAstralRegimeModule(band, score) {
 }
 
 function initAstralCoreMount() {
-  const mount = document.getElementById('astral-core');
-  if (!mount) {
-    return;
-  }
-
-  let canvas = mount.querySelector('canvas');
-  if (!canvas) {
-    canvas = document.createElement('canvas');
-    canvas.className = 'astral-core-canvas';
-    canvas.setAttribute('aria-hidden', 'true');
-    mount.appendChild(canvas);
-  }
-
-  const ctx = canvas.getContext('2d');
-
-  const resizeCanvas = () => {
-    const width = Math.max(1, mount.clientWidth);
-    const height = Math.max(1, mount.clientHeight);
-    canvas.width = width;
-    canvas.height = height;
-    if (ctx) {
-      ctx.clearRect(0, 0, width, height);
-    }
-  };
-
-  const drawGlowingOrb = () => {
-    if (!ctx) return;
-    const width = canvas.width;
-    const height = canvas.height;
-    const centerX = width / 2;
-    const centerY = height / 2;
-    const radius = Math.max(20, Math.min(width, height) * 0.25);
-
-    ctx.clearRect(0, 0, width, height);
-
-    const gradient = ctx.createRadialGradient(
-      centerX,
-      centerY,
-      radius * 0.2,
-      centerX,
-      centerY,
-      radius
-    );
-    gradient.addColorStop(0, 'rgba(248, 250, 252, 0.95)');
-    gradient.addColorStop(0.4, 'rgba(129, 140, 248, 0.6)');
-    gradient.addColorStop(1, 'rgba(30, 64, 175, 0.08)');
-
-    ctx.fillStyle = gradient;
-    ctx.beginPath();
-    ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
-    ctx.fill();
-  };
-
-  resizeCanvas();
-  drawGlowingOrb();
-
-  if (typeof ResizeObserver !== 'undefined') {
-    const observer = new ResizeObserver(() => {
-      resizeCanvas();
-      drawGlowingOrb();
-    });
-    observer.observe(mount);
-  }
-
-  window.addEventListener('resize', () => {
-    resizeCanvas();
-    drawGlowingOrb();
-  });
-
-  const animate = () => {
-    drawGlowingOrb();
-    requestAnimationFrame(animate);
-  };
-
-  requestAnimationFrame(animate);
+  // 3D/canvas astral-core animation intentionally disabled.
+  return;
 }
 
 // -----------------------------
