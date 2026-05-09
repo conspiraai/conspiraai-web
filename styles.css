@@ -17,7 +17,7 @@ a{color:#c8a96e}
 .nav a{font-family:'Space Mono',monospace;font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;text-decoration:none;color:#f0ede8;padding:.4rem .6rem;border:1px solid transparent}
 .nav a:hover,.nav a.nav-active{border-color:#c8a96e;color:#c8a96e}
 
-.section{margin-top:2rem;padding:1.25rem;border:1px solid rgba(200,169,110,.08);background:rgba(255,255,255,.02)}
+.section{margin-top:2rem;padding:1.25rem;padding-bottom:3rem;border:1px solid rgba(200,169,110,.08);background:rgba(255,255,255,.02)}
 .section-header{margin-bottom:1rem}
 .section-title,h1,h2,h3{font-family:'Syncopate',sans-serif;text-transform:uppercase;letter-spacing:.05em;color:#f0ede8}
 .section-sub{color:#8a8fa0}
@@ -25,7 +25,7 @@ a{color:#c8a96e}
 .hero-sub{font-size:1.1rem}
 
 .grid{display:grid;gap:1rem}.grid-2{grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}.grid-3{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
-.card,.aii-card,.network-card{background:rgba(255,255,255,.02);border:1px solid rgba(200,169,110,.08);padding:1rem}
+.card,.aii-card,.network-card{background:rgba(255,255,255,.02);border:1px solid rgba(200,169,110,.08);padding:1rem;padding-bottom:3rem}
 
 .pill,.daily-stance-kicker,.astral-regime-label,.astral-regime-aii-label,.network-label,.aii-label,dt,label,summary{font-family:'Space Mono',monospace;font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:#8a8fa0}
 .aii-value,.astral-regime-aii-value,.astral-regime-name,#weekly-aii{font-family:'Cormorant Garamond',serif;font-size:3.2rem;color:#c8a96e;line-height:1}
