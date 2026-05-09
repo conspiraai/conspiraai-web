@@ -16,6 +16,7 @@ a{color:#c8a96e}
 .nav{display:flex;gap:.6rem;flex-wrap:wrap}
 .nav a{font-family:'Space Mono',monospace;font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;text-decoration:none;color:#f0ede8;padding:.4rem .6rem;border:1px solid transparent}
 .nav a:hover,.nav a.nav-active{border-color:#c8a96e;color:#c8a96e}
+nav a.active{color:#c8a96e;border-bottom:1px solid rgba(200,169,110,0.5);padding-bottom:2px;}
 
 .section{position:relative;margin-top:2rem;padding:4rem 1.25rem;border:1px solid rgba(200,169,110,.08);border-top:1px solid rgba(200,169,110,.08);background:radial-gradient(ellipse at 50% 0%, rgba(200,169,110,0.06) 0%, transparent 60%), rgba(255,255,255,.02)}
 .section-header{margin-bottom:1rem}
@@ -54,5 +55,9 @@ input,textarea{width:100%;background:rgba(255,255,255,.02);border:1px solid rgba
 
 .site-footer{border-top:1px solid rgba(200,169,110,.08);padding-top:1rem;color:#8a8fa0}
 .footer-links{display:none}
+
+.hero-image-section{position:relative;width:100%;max-height:480px;overflow:hidden;}
+.hero-image-section img{display:block;width:100%;max-height:480px;object-fit:cover;object-position:center top;}
+.hero-image-overlay{position:absolute;inset:0;background:linear-gradient(to bottom, transparent 50%, #000000 100%);pointer-events:none;}
 
 @media (max-width:760px){.site-header{position:static}.main{padding-top:1rem}.aii-grid{grid-template-columns:1fr}}

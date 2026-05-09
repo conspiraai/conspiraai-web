@@ -1,16 +1,28 @@
 /*
  * script.js – light UI helpers
- * - Highlights active nav tab based on body[data-page]
+ * - Highlights active nav tab based on current pathname
  */
 
 document.addEventListener('DOMContentLoaded', () => {
-  const page = document.body.dataset.page;
-  if (!page) return;
+  const navLinks = document.querySelectorAll('.nav a[href]');
+  if (!navLinks.length) return;
 
-  const navKey = page === 'home' ? 'today' : page;
-  const linkId = `nav-${navKey}`;
-  const activeLink = document.getElementById(linkId);
-  if (activeLink) {
-    activeLink.classList.add('nav-active');
-  }
+  const currentPath = window.location.pathname;
+
+  const normalizePath = (path) => {
+    if (!path) return '/';
+    const cleaned = path.replace(/\/+$/, '') || '/';
+    return cleaned === '/index.html' ? '/' : cleaned;
+  };
+
+  const normalizedCurrent = normalizePath(currentPath);
+
+  navLinks.forEach((link) => {
+    const href = link.getAttribute('href') || '';
+    const hrefPath = normalizePath(new URL(href, window.location.origin).pathname);
+
+    if (normalizedCurrent === hrefPath) {
+      link.classList.add('active');
+    }
+  });
 });
