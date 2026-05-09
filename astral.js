@@ -27,7 +27,8 @@ async function fetchLunarData() {
     if (!res.ok) throw new Error('Non-200 response');
     const data = await res.json();
 
-    const moonIllumination = parseIllumination(data.moon_illumination);
+    const moonIlluminationRaw = parseIllumination(data.moon_illumination ?? data.moon_illumination_percentage ?? data.illumination);
+    const moonIllumination = !isNaN(moonIlluminationRaw) && moonIlluminationRaw <= 1 ? moonIlluminationRaw * 100 : moonIlluminationRaw;
 
     return {
       date: new Date(),
@@ -668,7 +669,7 @@ async function initAstral() {
     setText(
       'aii-illumination',
       lunar && !isNaN(lunar.moonIllumination)
-        ? `${lunar.moonIllumination}%`
+        ? `${Math.round(lunar.moonIllumination)}%`
         : '–'
     );
     setText('aii-updated', timestamp);
@@ -692,14 +693,16 @@ async function initAstral() {
     setText(
       'lunar-illumination',
       lunar && !isNaN(lunar.moonIllumination)
-        ? `${lunar.moonIllumination}%`
+        ? `${Math.round(lunar.moonIllumination)}%`
         : '–'
     );
     setText('lunar-rise', lunar?.moonrise || '–');
     setText('lunar-set', lunar?.moonset || '–');
     setText(
       'lunar-distance',
-      lunar?.moonDistanceKm ? `${lunar.moonDistanceKm} km` : '–'
+      lunar?.moonDistanceKm
+        ? `${Math.round(Number(lunar.moonDistanceKm)).toLocaleString()} km`
+        : '–'
     );
     setText('lunar-note', summary);
   }
@@ -713,7 +716,7 @@ async function initAstral() {
     setText(
       'signals-illumination',
       lunar && !isNaN(lunar.moonIllumination)
-        ? `${lunar.moonIllumination}%`
+        ? `${Math.round(lunar.moonIllumination)}%`
         : '–'
     );
     setText('signals-summary', summary);
@@ -729,7 +732,7 @@ async function initAstral() {
     setText(
       'weekly-illumination',
       lunar && !isNaN(lunar.moonIllumination)
-        ? `${lunar.moonIllumination}%`
+        ? `${Math.round(lunar.moonIllumination)}%`
         : '–'
     );
     setText('weekly-range', `Week of ${formatDate(lunar?.date || new Date())}`);
