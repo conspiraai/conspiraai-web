@@ -28,7 +28,10 @@ async function fetchLunarData() {
     const data = await res.json();
 
     const moonIlluminationRaw = parseIllumination(data.moon_illumination ?? data.moon_illumination_percentage ?? data.illumination);
-    const moonIllumination = !isNaN(moonIlluminationRaw) && moonIlluminationRaw <= 1 ? moonIlluminationRaw * 100 : moonIlluminationRaw;
+    const moonIlluminationBase = !isNaN(moonIlluminationRaw) && Math.abs(moonIlluminationRaw) <= 1 ? moonIlluminationRaw * 100 : moonIlluminationRaw;
+    const moonIllumination = isNaN(moonIlluminationBase)
+      ? NaN
+      : Math.max(0, Math.min(100, Math.round(Math.abs(moonIlluminationBase))));
 
     return {
       date: new Date(),
