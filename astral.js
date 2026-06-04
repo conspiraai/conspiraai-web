@@ -37,8 +37,18 @@ async function fetchLunarData() {
       date: new Date(),
       moonPhase: data.moon_phase,
       moonIllumination,
-      moonrise: data.moonrise,
-      moonset: data.moonset,
+      moonrise: normalizeAstralTime(
+        data.moonrise,
+        data.moonrise_time,
+        data.moon_rise,
+        data.moon?.rise
+      ),
+      moonset: normalizeAstralTime(
+        data.moonset,
+        data.moonset_time,
+        data.moon_set,
+        data.moon?.set
+      ),
       moonDistanceKm: data.moon_distance,
       sunDistanceKm: data.sun_distance
     };
@@ -266,6 +276,16 @@ function normalizeEventLabel(rawLabel) {
 function formatMoonPhaseLabel(rawPhase) {
   if (!rawPhase) return '–';
   return normalizeEventLabel(rawPhase);
+}
+
+function normalizeAstralTime(...values) {
+  const fallback = values.find((value) => {
+    if (value == null) return false;
+    const cleaned = String(value).trim();
+    return cleaned && cleaned !== '–' && cleaned !== '--:--' && cleaned !== '-:-';
+  });
+
+  return fallback ? String(fallback).trim() : '–';
 }
 
 function getNextUpcomingEvent(events, now = new Date()) {
